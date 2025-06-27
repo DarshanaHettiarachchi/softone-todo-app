@@ -1,0 +1,39 @@
+<mat-card class="example-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>{{ formTitle() }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form class="edit-course-form" [formGroup]="form" (ngSubmit)="onsubmit()">
+      <div class="form-control">
+        <label>Todo title:</label>
+        <input formControlName="title" />
+      </div>
+
+      <div class="form-control">
+        <label>Todo Description (Optional):</label>
+        <textarea formControlName="description"> </textarea>
+      </div>
+
+      <div class="form-control">
+        <label>Due Date:</label>
+        <input
+          formControlName="dueDate"
+          [matDatepicker]="picker"
+          (click)="picker.open()"
+          (keydown.enter)="picker.open()"
+          (keydown.space)="picker.open()"
+          readonly
+        />
+        <!-- <mat-datepicker-toggle
+      [for]="picker"
+      [tabIndex]="-1"
+    ></mat-datepicker-toggle> -->
+        <mat-datepicker #picker></mat-datepicker>
+      </div>
+      <div class="form-actions">
+        <button mat-flat-button>{{ submitButtonText() }}</button>
+        <button mat-stroked-button (click)="oncancel()">Cancel</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

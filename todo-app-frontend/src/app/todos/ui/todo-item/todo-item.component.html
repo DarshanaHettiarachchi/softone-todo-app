@@ -1,0 +1,19 @@
+<mat-card class="todo-item" appearance="outlined" color="primary">
+  <mat-card-header>
+    <mat-card-title>{{ todo().title }}</mat-card-title>
+    <mat-card-subtitle>
+      <span>Due on: {{ todo().dueDate | date : "longDate" }}</span>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      {{ todo().description }}
+    </p>
+  </mat-card-content>
+  <mat-card-footer>
+    <button mat-button (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
+  </mat-card-footer>
+</mat-card>

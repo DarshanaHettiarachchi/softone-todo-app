@@ -1,0 +1,15 @@
+section.container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+section.container > * {
+  flex: 1;
+}
+
+section.container > .todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
