@@ -9,10 +9,17 @@ import { TodoFormComponent } from '../ui/todo-form/todo-form.component';
 import { TodoDataService } from '../data-access/todo-data.service';
 import { Todo } from '../data-access/todo.model';
 import { MatCardModule } from '@angular/material/card';
+import { TodoFilterFormComponent } from '../ui/todo-filter-form/todo-filter-form.component';
+import { TodoFilter } from '../data-access/filter.model';
 
 @Component({
   selector: 'app-todos',
-  imports: [TodoItemComponent, TodoFormComponent, MatCardModule],
+  imports: [
+    TodoItemComponent,
+    TodoFormComponent,
+    TodoFilterFormComponent,
+    MatCardModule,
+  ],
   templateUrl: './todos.component.html',
   styleUrl: './todos.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,8 +30,7 @@ export class TodosComponent {
   todos = this.todoDataService.todos;
   todosError = this.todoDataService.todosError;
   selectedTodo = this.todoDataService.selectedTodo;
-
-  formTitle = computed(() => (this.selectedTodo() ? 'Edit Todo' : 'Add Todo'));
+  currentFilter = this.todoDataService.todosFilter;
 
   handleEditTodo(todo: Todo) {
     this.todoDataService.todoSelected(todo);
@@ -34,7 +40,15 @@ export class TodosComponent {
     this.todoDataService.todoSelected(null);
   }
 
-  handleAddTodo(todo: Partial<Todo>) {}
+  handleAddTodo(todo: Partial<Todo>) {
+    console.log('Adding todo:', todo);
+    this.todoDataService.addTodo(todo);
+  }
 
   handleUpdateTodo(todo: Todo) {}
+
+  handleFilterChange(filter: TodoFilter) {
+    console.log('Filter changed:', filter);
+    this.todoDataService.todoFilterChanged(filter);
+  }
 }

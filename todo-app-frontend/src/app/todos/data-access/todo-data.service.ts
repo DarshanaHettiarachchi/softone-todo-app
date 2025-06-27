@@ -1,11 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Todo } from './todo.model';
 import { Result } from '../../utils/result.model';
-import { catchError, map, tap } from 'rxjs/operators';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { of } from 'rxjs';
+import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { Observable, of } from 'rxjs';
 import { HttpErrorService } from '../../utils/http-error.service';
+import { DEFAULT_TODO_FILTER, TodoFilter } from './filter.model';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class TodoDataService {
   private errorService = inject(HttpErrorService);
 
   selectedTodo = signal<Todo | null>(null);
+  todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
 
   private todosResult$ = this.http.get<Todo[]>(this.todoUrl).pipe(
     map((p) => ({ data: p } as Result<Todo[]>)),
@@ -29,7 +31,36 @@ export class TodoDataService {
     )
   );
 
-  private todosResult = toSignal(this.todosResult$, {
+  private todosResult2$ = toObservable(this.todosFilter).pipe(
+    switchMap(() => this.getTodos())
+  );
+
+  private getTodos(): Observable<Result<Todo[]>> {
+    const params = this.buildParams(this.todosFilter()).toString();
+    console.log('Fetching todos with params:', params);
+    return this.http.get<Todo[]>(this.todoUrl).pipe(
+      map((p) => ({ data: p } as Result<Todo[]>)),
+      tap((p) => {
+        this.selectedTodo.set(null); // Reset selected todo on new fetch
+        console.log(JSON.stringify(p));
+      }),
+      catchError((err) =>
+        of({
+          data: [],
+          error: this.errorService.formatError(err),
+        } as Result<Todo[]>)
+      )
+    );
+  }
+
+  private buildParams(filter: TodoFilter): HttpParams {
+    return new HttpParams()
+      .set('status', filter.status)
+      .set('sortBy', filter.sortBy)
+      .set('direction', filter.direction);
+  }
+
+  private todosResult = toSignal(this.todosResult2$, {
     initialValue: { data: [] } as Result<Todo[]>,
   });
 
@@ -40,5 +71,11 @@ export class TodoDataService {
     this.selectedTodo.set(todo);
   }
 
-  addTodo(todo: Partial<Todo>): void {}
+  todoFilterChanged(filter: TodoFilter): void {
+    this.todosFilter.set(filter);
+  }
+
+  addTodo(todo: Partial<Todo>): void {
+    this.todosFilter.set(DEFAULT_TODO_FILTER); // Reset filter on add
+  }
 }

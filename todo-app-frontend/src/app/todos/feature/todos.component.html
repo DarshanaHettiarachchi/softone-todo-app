@@ -2,7 +2,12 @@
 
 <section class="container">
   <div class="todo-list">
-    @for (todo of todos(); track todo.id) {
+    @if (todos()?.length) {
+    <todo-filter-form
+      [currentFilter]="currentFilter()"
+      (filterChanged)="handleFilterChange($event)"
+    ></todo-filter-form>
+    } @for (todo of todos(); track todo.id) {
     <app-todo-item
       [todo]="todo"
       (edit)="handleEditTodo($event)"

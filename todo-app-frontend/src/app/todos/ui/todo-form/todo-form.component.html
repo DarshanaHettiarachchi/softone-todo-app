@@ -3,7 +3,7 @@
     <mat-card-title>{{ formTitle() }}</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <form class="edit-course-form" [formGroup]="form" (ngSubmit)="onsubmit()">
+    <form [formGroup]="form" (ngSubmit)="onsubmit()">
       <div class="form-control">
         <label>Todo title:</label>
         <input formControlName="title" />

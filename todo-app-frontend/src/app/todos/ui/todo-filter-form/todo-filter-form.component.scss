@@ -1,3 +1,56 @@
-:host {
-  display: block;
+input {
+  margin-left: 5px;
+}
+
+form {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.form-control {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-control input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.form-control textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 16px;
+  min-height: 100px;
+}
+
+.form-control select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.form-control label {
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.icon-button-control {
+  display: flex;
+  align-items: center;
+  justify-self: center;
 }
