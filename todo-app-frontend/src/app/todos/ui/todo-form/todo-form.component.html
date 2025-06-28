@@ -10,17 +10,36 @@
   <mat-card-content>
     <form [formGroup]="form" (ngSubmit)="onsubmit()">
       <div class="form-control">
-        <label>Todo title:</label>
+        <label>Title</label>
         <input formControlName="title" />
+        @if (form.get("title")?.touched || form.get("title")?.dirty) {
+          @if (form.get("title")?.hasError("required")) {
+            <span class="form-error-msg">Todo title is required.</span>
+          }
+          @if (form.get("title")?.hasError("minlength")) {
+            <span class="form-error-msg"
+              >Title must be at least 3 characters.</span
+            >
+          }
+        }
       </div>
 
       <div class="form-control">
-        <label>Todo Description (Optional):</label>
+        <label>Description (Optional)</label>
         <textarea formControlName="description"> </textarea>
+        @if (
+          form.get("description")?.touched || form.get("description")?.dirty
+        ) {
+          @if (form.get("description")?.hasError("maxlength")) {
+            <span class="form-error-msg"
+              >Description can only be 500 characters long.</span
+            >
+          }
+        }
       </div>
 
       <div class="form-control">
-        <label>Due Date:</label>
+        <label>Due Date</label>
         <input
           formControlName="dueDate"
           [matDatepicker]="picker"
@@ -34,8 +53,12 @@
       [tabIndex]="-1"
     ></mat-datepicker-toggle> -->
         <mat-datepicker at-datepicker #picker></mat-datepicker>
-        @if (form.get("dueDate")?.hasError("dueDateInPast")) {
-          <mat-error> Due date must be in the future. </mat-error>
+        @if (form.get("dueDate")?.touched || form.get("DueDate")?.dirty) {
+          @if (form.get("dueDate")?.hasError("dueDateInPast")) {
+            <span class="form-error-msg">
+              Due date must be in the future.
+            </span>
+          }
         }
       </div>
       <div class="form-actions">
