@@ -5,25 +5,27 @@
       [currentFilter]="currentFilter()"
       (filterChanged)="handleFilterChange($event)"
     ></todo-filter-form>
-    @if (todosLoading()) {
-      <div class="loading-indicator">
-        <mat-spinner></mat-spinner>
-      </div>
-    } @else if (todosLoadingError()) {
-      <div class="error-message">
-        <p>Error loading todos: {{ todosLoadingError() }}</p>
-      </div>
-    } @else if (todos().length === 0) {
-      <div class="no-todos-message">
-        <p>No todos available.</p>
-      </div>
-    }
-    @for (todo of todos(); track todo.id) {
-      <app-todo-item
-        [todo]="todo"
-        (edit)="handleEditTodo($event)"
-      ></app-todo-item>
-    }
+    <div class="todo-item-container">
+      @if (todosLoading()) {
+        <div class="loading-indicator">
+          <mat-spinner></mat-spinner>
+        </div>
+      } @else if (todosLoadingError()) {
+        <div class="error-message">
+          <p>Error loading todos: {{ todosLoadingError() }}</p>
+        </div>
+      } @else if (todos().length === 0) {
+        <div class="no-todos-message">
+          <p>No todos available.</p>
+        </div>
+      }
+      @for (todo of todos(); track todo.id) {
+        <app-todo-item
+          [todo]="todo"
+          (edit)="handleEditTodo($event)"
+        ></app-todo-item>
+      }
+    </div>
   </div>
   <div class="todo-form">
     <todo-form
