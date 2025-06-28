@@ -62,8 +62,10 @@
         }
       </div>
       <div class="form-actions">
-        <button mat-flat-button>{{ submitButtonText() }}</button>
-        <button mat-stroked-button (click)="oncancel()">Cancel</button>
+        <button mat-flat-button type="submit">{{ submitButtonText() }}</button>
+        <button mat-stroked-button (click)="oncancel()" type="reset">
+          Cancel
+        </button>
       </div>
     </form>
   </mat-card-content>

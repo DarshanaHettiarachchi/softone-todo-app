@@ -115,6 +115,8 @@ export class TodoFormComponent {
         todo.createdDate = this.todoToEdit()?.createdDate;
         this.updateTodo.emit(todo as Todo);
       } else {
+        console.log('Adding todo foem foem:', todo);
+
         this.addTodo.emit(todo);
       }
       this.form.reset();
