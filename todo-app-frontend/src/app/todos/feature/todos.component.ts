@@ -6,7 +6,7 @@ import { Todo } from '../data-access/todo.model';
 import { MatCardModule } from '@angular/material/card';
 import { TodoFilterFormComponent } from '../ui/todo-filter-form/todo-filter-form.component';
 import { TodoFilter } from '../data-access/filter.model';
-import { GlobalErrorComponent } from '../../shared/global-error-component/global-error.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-todos',
@@ -15,7 +15,7 @@ import { GlobalErrorComponent } from '../../shared/global-error-component/global
     TodoFormComponent,
     TodoFilterFormComponent,
     MatCardModule,
-    GlobalErrorComponent,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './todos.component.html',
   styleUrl: './todos.component.scss',
@@ -24,8 +24,10 @@ import { GlobalErrorComponent } from '../../shared/global-error-component/global
 export class TodosComponent {
   private todoDataService = inject(TodoDataService);
 
+  todosLoading = this.todoDataService.todosLoading;
+  todosSaving = this.todoDataService.todoSaving;
   todos = this.todoDataService.todos;
-  getTodosError = this.todoDataService.getTodosError;
+  todosLoadingError = this.todoDataService.getTodosError;
   selectedTodo = this.todoDataService.selectedTodo;
   currentFilter = this.todoDataService.todosFilter;
 

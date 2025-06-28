@@ -32,7 +32,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.updateTodo(todo);
-    })
+    }),
   );
 
   private todoUpdateResult = toSignal(this.todoUpdateResult$, {
@@ -42,18 +42,20 @@ export class TodoDataService {
   private todosResponse$ = this.http
     .get<ApiResponse<Todo[]>>(this.TODO_URL)
     .pipe(
-      map((t) => ({ data: t.data } as Result<Todo[]>)),
+      map((t) => ({ data: t.data }) as Result<Todo[]>),
       tap((t) => {
+        this.todosLoading.set(false);
         this.selectedTodo.set(null); // Reset selected todo on new fetch
         this.currentTodos.set(t.data || []);
         console.log(t.data);
       }),
-      catchError((err) =>
-        of({
+      catchError((err) => {
+        this.todosLoading.set(false);
+        return of({
           data: [],
           error: this.errorService.formatError(err),
-        } as Result<Todo[]>)
-      )
+        } as Result<Todo[]>);
+      }),
     );
 
   private todosResult = toSignal(this.todosResponse$, {
@@ -64,12 +66,14 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.saveTodo(todo);
-    })
+    }),
   );
 
   selectedTodo = signal<Todo | null>(null);
   todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
   getTodosError = computed(() => this.todosResult().error);
+  todosLoading = signal(true);
+  todoSaving = signal(false);
 
   constructor() {
     effect(() => {
@@ -142,25 +146,28 @@ export class TodoDataService {
   }
 
   private saveTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
+    this.todoSaving.set(true);
     return this.http.post<ApiResponse<Todo>>(this.TODO_URL, todo).pipe(
-      map((t) => ({ data: t.data } as Result<Todo>)),
+      map((t) => ({ data: t.data }) as Result<Todo>),
       tap((t) => {
+        this.todoSaving.set(false);
         console.log(t);
         this.currentTodos.update((todos) => [...todos, t.data] as Todo[]);
         this.todoToSave.set(null);
       }),
-      catchError((err) =>
-        of({
+      catchError((err) => {
+        this.todoSaving.set(false);
+        return of({
           data: {} as Todo,
           error: this.errorService.formatError(err),
-        } as Result<Todo>)
-      )
+        } as Result<Todo>);
+      }),
     );
   }
 
   private updateTodo(todo: Partial<Todo>): Observable<Result<void>> {
     return this.http.put<ApiResponse<void>>(this.TODO_URL, todo).pipe(
-      map(() => ({ data: undefined } as Result<void>)),
+      map(() => ({ data: undefined }) as Result<void>),
       tap((t) => {
         console.log(t);
         this.currentTodos.update((todos) => {
@@ -171,8 +178,8 @@ export class TodoDataService {
       catchError((err) =>
         of({
           error: this.errorService.formatError(err),
-        } as Result<void>)
-      )
+        } as Result<void>),
+      ),
     );
   }
 

@@ -15,6 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Todo } from '../../data-access/todo.model';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'todo-form',
@@ -26,6 +27,7 @@ import { Todo } from '../../data-access/todo.model';
     MatInputModule,
     MatDatepickerModule,
     MatCardModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './todo-form.component.html',
   styleUrl: './todo-form.component.scss',
@@ -38,6 +40,7 @@ export class TodoFormComponent {
   cancelEdit = output();
   addTodo = output<Partial<Todo>>();
   updateTodo = output<Todo>();
+  formLoading = input<boolean>(false);
 
   formTitle = computed(() => (this.todoToEdit() ? 'Edit Todo' : 'Add Todo'));
   submitButtonText = computed(() => (this.todoToEdit() ? 'Update' : 'Add'));
