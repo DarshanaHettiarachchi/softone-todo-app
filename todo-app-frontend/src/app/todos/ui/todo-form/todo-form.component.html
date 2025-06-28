@@ -33,7 +33,10 @@
       [for]="picker"
       [tabIndex]="-1"
     ></mat-datepicker-toggle> -->
-        <mat-datepicker #picker></mat-datepicker>
+        <mat-datepicker at-datepicker #picker></mat-datepicker>
+        @if (form.get("dueDate")?.hasError("dueDateInPast")) {
+          <mat-error> Due date must be in the future. </mat-error>
+        }
       </div>
       <div class="form-actions">
         <button mat-flat-button>{{ submitButtonText() }}</button>

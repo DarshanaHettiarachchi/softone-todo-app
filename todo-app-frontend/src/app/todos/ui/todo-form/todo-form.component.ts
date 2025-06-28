@@ -7,7 +7,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -45,10 +45,40 @@ export class TodoFormComponent {
   formTitle = computed(() => (this.todoToEdit() ? 'Edit Todo' : 'Add Todo'));
   submitButtonText = computed(() => (this.todoToEdit() ? 'Update' : 'Add'));
 
+  static dueDateInFutureValidator(
+    control: import('@angular/forms').AbstractControl,
+  ) {
+    const value = control.value;
+    if (!value) return null;
+    const selectedDate = new Date(value);
+    const today = new Date();
+    selectedDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    return selectedDate >= today ? null : { dueDateInPast: true };
+  }
+
   form = this.fb.group({
-    title: [''],
-    description: [''],
-    dueDate: [null as unknown as Date],
+    title: [
+      '',
+      {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(3)],
+      },
+    ],
+    description: [
+      '',
+      { nonNullable: false, validators: [Validators.maxLength(500)] },
+    ],
+    dueDate: [
+      null as Date | null,
+      {
+        nonNullable: true,
+        validators: [
+          Validators.required,
+          TodoFormComponent.dueDateInFutureValidator,
+        ],
+      },
+    ],
   });
 
   constructor() {
