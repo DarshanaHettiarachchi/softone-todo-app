@@ -18,6 +18,7 @@ public class GetTodosHandler
         {
             Id = x.Id,
             Title = x.Title,
+            Description = x.Description,
             DueDate = x.DueDate,
             IsComplete = x.IsComplete
         }).ToList();

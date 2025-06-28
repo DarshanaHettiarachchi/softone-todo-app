@@ -55,7 +55,7 @@ export class TodoFormComponent {
         this.form.patchValue({
           title: todo.title,
           description: todo.description,
-          dueDate: todo.dueDate,
+          dueDate: new Date(todo.dueDate),
         });
       } else {
         this.form.reset();
@@ -71,8 +71,11 @@ export class TodoFormComponent {
 
   onsubmit() {
     if (this.form.valid) {
+      const jsDate: Date = this.form.value.dueDate as Date;
+      const isoDate = jsDate.toISOString().slice(0, 10);
       const todo: Partial<Todo> = {
         ...this.form.value,
+        dueDate: isoDate,
       } as Partial<Todo>;
       if (this.todoToEdit()) {
         this.updateTodo.emit(todo as Todo);

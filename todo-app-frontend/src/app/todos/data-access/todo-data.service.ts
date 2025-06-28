@@ -2,18 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Todo } from './todo.model';
 import { Result } from '../../utils/result.model';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
+import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, Observable, of } from 'rxjs';
 import { HttpErrorService } from '../../utils/http-error.service';
 import { DEFAULT_TODO_FILTER, TodoFilter } from './filter.model';
+import { ApiResponse } from './todo-api-response.model';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -24,19 +18,11 @@ export class TodoDataService {
   private http = inject(HttpClient);
   private errorService = inject(HttpErrorService);
 
+  private todoToSave = signal<Todo | null>(null);
+  private todoToSave$ = toObservable(this.todoToSave);
+
   selectedTodo = signal<Todo | null>(null);
   todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
-
-  private todosResult$ = this.http.get<Todo[]>(this.todoUrl).pipe(
-    map((p) => ({ data: p } as Result<Todo[]>)),
-    tap((p) => console.log(JSON.stringify(p))),
-    catchError((err) =>
-      of({
-        data: [],
-        error: this.errorService.formatError(err),
-      } as Result<Todo[]>)
-    )
-  );
 
   private isFilterEqual(a: TodoFilter, b: TodoFilter): boolean {
     return (
@@ -46,27 +32,10 @@ export class TodoDataService {
     );
   }
 
-  private todosFilter$ = toObservable(this.todosFilter).pipe(
-    distinctUntilChanged(this.isFilterEqual)
-  );
-
-  private reloadTrigger = signal(0);
-
-  private combinedTrigger$ = combineLatest([
-    this.todosFilter$,
-    toObservable(this.reloadTrigger),
-  ]);
-
-  private todosResult2$ = this.combinedTrigger$.pipe(
-    debounceTime(100),
-    switchMap(() => this.getTodos())
-  );
-
-  private getTodos(): Observable<Result<Todo[]>> {
-    const params = this.buildParams(this.todosFilter()).toString();
-    console.log('Fetching todos with params:', params);
-    return this.http.get<Todo[]>(this.todoUrl).pipe(
-      map((p) => ({ data: p } as Result<Todo[]>)),
+  private todosResponse$ = this.http
+    .get<ApiResponse<Todo[]>>(this.todoUrl)
+    .pipe(
+      map((p) => ({ data: p.data } as Result<Todo[]>)),
       tap((p) => {
         this.selectedTodo.set(null); // Reset selected todo on new fetch
         console.log(JSON.stringify(p));
@@ -78,6 +47,28 @@ export class TodoDataService {
         } as Result<Todo[]>)
       )
     );
+
+  private todoSavedResult$ = this.todoToSave$.pipe(
+    filter(Boolean),
+    switchMap((todo) => {
+      return this.saveTodo(todo);
+    })
+  );
+
+  private saveTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
+    return this.http.post<ApiResponse<Todo>>(this.todoUrl, todo).pipe(
+      map((p) => ({ data: p.data } as Result<Todo>)),
+      tap((p) => {
+        this.selectedTodo.set(null); // Reset selected todo on new fetch
+        console.log(JSON.stringify(p));
+      }),
+      catchError((err) =>
+        of({
+          data: {} as Todo,
+          error: this.errorService.formatError(err),
+        } as Result<Todo>)
+      )
+    );
   }
 
   private buildParams(filter: TodoFilter): HttpParams {
@@ -87,23 +78,50 @@ export class TodoDataService {
       .set('direction', filter.direction);
   }
 
-  private todosResult = toSignal(this.todosResult2$, {
+  private todosResult = toSignal(this.todosResponse$, {
     initialValue: { data: [] } as Result<Todo[]>,
   });
 
-  todos = computed(() => this.todosResult().data);
+  todos = computed(() => {
+    const currentFilter = this.todosFilter();
+    const todos = this.todosResult().data;
+
+    const filteredTodos = todos?.filter((todo) => {
+      if (currentFilter.status === 'all') {
+        return true; // No filtering by status
+      }
+      return currentFilter.status === 'completed'
+        ? todo.completed
+        : !todo.completed;
+    });
+
+    return filteredTodos;
+  });
+
   todosError = computed(() => this.todosResult().error);
+
+  private todoSavedResult = toSignal(this.todoSavedResult$, {
+    initialValue: { data: {} as Todo } as Result<Todo>,
+  });
+
+  todoSaved = computed(() => this.todoSavedResult().data);
+  todoSavedError = computed(() => this.todoSavedResult().error);
 
   todoSelected(todo: Todo | null): void {
     this.selectedTodo.set(todo);
   }
 
   todoFilterChanged(filter: TodoFilter): void {
+    if (this.isFilterEqual(this.todosFilter(), filter)) {
+      return; // No change in filter, do nothing
+    }
     this.todosFilter.set(filter);
   }
 
   addTodo(todo: Partial<Todo>): void {
-    this.todosFilter.set(DEFAULT_TODO_FILTER);
-    this.reloadTrigger.update((x) => x + 1);
+    //this.saveTodo(todo);
+    this.todoToSave.set(todo as Todo);
+    // this.todosFilter.set(DEFAULT_TODO_FILTER);
+    // this.reloadTrigger.update((x) => x + 1);
   }
 }

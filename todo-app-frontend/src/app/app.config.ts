@@ -7,13 +7,13 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { FormsModule } from '@angular/forms';
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { TodoDataServer } from './dummy-data/todo-data.server';
 import { provideHttpClient } from '@angular/common/http';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
     provideHttpClient(),
     importProvidersFrom(
       FormsModule
