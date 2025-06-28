@@ -1,5 +1,5 @@
-﻿namespace TodoApp.Application.Features.Todos.Commands.CreateToDoItem;
-public sealed class CreateToDoItemCommandResponse
+﻿namespace TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+public sealed class CreateTodoItemCommandResponse
 {
 
 }

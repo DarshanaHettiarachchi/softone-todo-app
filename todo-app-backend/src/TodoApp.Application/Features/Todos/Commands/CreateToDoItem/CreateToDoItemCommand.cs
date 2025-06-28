@@ -1,5 +1,5 @@
-﻿namespace TodoApp.Application.Features.Todos.Commands.CreateToDoItem;
-public sealed record CreateToDoItemCommand
+﻿namespace TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+public sealed record CreateTodoItemCommand
 {
     public required string Title { get; init; }
     public string Description { get; init; }

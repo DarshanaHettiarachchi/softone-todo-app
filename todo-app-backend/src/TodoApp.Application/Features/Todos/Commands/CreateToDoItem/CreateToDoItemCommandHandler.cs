@@ -1,17 +1,17 @@
 ﻿using TodoApp.Application.Contracts.Persistence;
 using TodoApp.Domain.Entities;
 
-namespace TodoApp.Application.Features.Todos.Commands.CreateToDoItem;
-public sealed class CreateToDoItemCommandHandler
+namespace TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+public sealed class CreateTodoItemCommandHandler
 {
-    private readonly IToDoItemRepository _repo;
+    private readonly ITodoItemRepository _repo;
 
-    public CreateToDoItemCommandHandler(IToDoItemRepository repo)
+    public CreateTodoItemCommandHandler(ITodoItemRepository repo)
     {
         _repo = repo;
     }
 
-    public async Task<int> HandleAsync(CreateToDoItemCommand command)
+    public async Task<int> HandleAsync(CreateTodoItemCommand command)
     {
         var todoItem = new TodoItem
         {
