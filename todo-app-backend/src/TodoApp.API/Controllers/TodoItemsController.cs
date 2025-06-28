@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+using TodoApp.Application.Features.Todos.Queries.GetTodos;
 
 namespace TodoApp.Api.Controllers;
 [Route("api/todos")]
@@ -7,12 +8,15 @@ namespace TodoApp.Api.Controllers;
 public class ToDoItemsController : ControllerBase
 {
     private readonly CreateTodoItemCommandHandler _createTodoItemCommandHandler;
-    private static readonly string[] value = new[] { "Hello" };
+    private readonly GetTodosHandler _getTodosHandler;
 
-    public ToDoItemsController(CreateTodoItemCommandHandler createToDoItemCommandHandler)
+    public ToDoItemsController(
+        CreateTodoItemCommandHandler createToDoItemCommandHandler,
+        GetTodosHandler getTodosHandler
+      )
     {
         _createTodoItemCommandHandler = createToDoItemCommandHandler;
-
+        _getTodosHandler = getTodosHandler;
     }
 
     [HttpPost()]
@@ -26,7 +30,7 @@ public class ToDoItemsController : ControllerBase
     [HttpGet()]
     public async Task<ActionResult<string[]>> Index()
     {
-        await Task.Delay(500);
-        return Ok(value);
+        var todosResponse = await _getTodosHandler.Handle();
+        return Ok(todosResponse);
     }
 }
