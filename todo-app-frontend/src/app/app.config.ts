@@ -16,8 +16,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(),
     importProvidersFrom(
-      FormsModule,
-      InMemoryWebApiModule.forRoot(TodoDataServer, { delay: 1000 })
+      FormsModule
+      // InMemoryWebApiModule.forRoot(TodoDataServer, { delay: 1000 })
     ),
     provideRouter(routes),
   ],
