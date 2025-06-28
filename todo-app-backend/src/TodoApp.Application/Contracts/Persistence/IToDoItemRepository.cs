@@ -1,7 +1,7 @@
 ﻿using TodoApp.Domain.Entities;
 
 namespace TodoApp.Application.Contracts.Persistence;
-public interface IToDoItemRepository : IAsyncRepository<TodoItem>
+public interface ITodoItemRepository : IAsyncRepository<TodoItem>
 {
     Task<TodoItem> MarkAsComplete(int id, CancellationToken cancellationToken);
 }
