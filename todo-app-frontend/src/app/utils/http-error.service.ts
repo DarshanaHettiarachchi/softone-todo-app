@@ -1,10 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { GlobalErrorComponent } from '../shared/global-error-component/global-error.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpErrorService {
+  readonly dialog = inject(MatDialog);
   formatError(err: HttpErrorResponse): string {
     return this.httpErrorFormatter(err);
   }
@@ -18,6 +21,11 @@ export class HttpErrorService {
       // The backend returned an unsuccessful response code.
       errorMessage = `Server returned code: ${err.status}, error message is: ${err.statusText}`;
     }
+    this.dialog.open(GlobalErrorComponent, {
+      data: { errorMessage }, // Pass the error message to the dialog
+      width: '400px',
+      disableClose: true,
+    });
     return errorMessage;
   }
 }

@@ -24,20 +24,20 @@ export class TodoDataService {
   private todoToSave = signal<Todo | null>(null);
   private todoToSave$ = toObservable(this.todoToSave);
   private currentTodos = signal<Todo[]>([]);
+  private todoToUpdate = signal<Todo | null>(null);
 
-  selectedTodo = signal<Todo | null>(null);
-  todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
+  private todoToUpdate$ = toObservable(this.todoToUpdate);
 
-  constructor() {
-    effect(() => {
-      const currentFilter = this.todosFilter();
-      this.router.navigate([], {
-        relativeTo: this.currentRoute,
-        queryParams: currentFilter,
-        queryParamsHandling: 'merge',
-      });
-    });
-  }
+  private todoUpdateResult$ = this.todoToUpdate$.pipe(
+    filter(Boolean),
+    switchMap((todo) => {
+      return this.updateTodo(todo);
+    })
+  );
+
+  private todoUpdateResult = toSignal(this.todoUpdateResult$, {
+    initialValue: null,
+  });
 
   private todosResponse$ = this.http
     .get<ApiResponse<Todo[]>>(this.TODO_URL)
@@ -56,6 +56,10 @@ export class TodoDataService {
       )
     );
 
+  private todosResult = toSignal(this.todosResponse$, {
+    initialValue: { data: [] } as Result<Todo[]>,
+  });
+
   private todoSavedResult$ = this.todoToSave$.pipe(
     filter(Boolean),
     switchMap((todo) => {
@@ -63,12 +67,22 @@ export class TodoDataService {
     })
   );
 
-  private todosResult = toSignal(this.todosResponse$, {
-    initialValue: { data: [] } as Result<Todo[]>,
-  });
+  selectedTodo = signal<Todo | null>(null);
+  todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
+  getTodosError = computed(() => this.todosResult().error);
+
+  constructor() {
+    effect(() => {
+      const currentFilter = this.todosFilter();
+      this.router.navigate([], {
+        relativeTo: this.currentRoute,
+        queryParams: currentFilter,
+        queryParamsHandling: 'merge',
+      });
+    });
+  }
 
   //receivedTodos = computed(() => this.todosResult().data);
-  todosError = computed(() => this.todosResult().error);
 
   todos = computed(() => {
     const currentFilter = this.todosFilter();
@@ -87,10 +101,10 @@ export class TodoDataService {
       console.log('sorting');
       if (currentFilter.sortBy === 'created') {
         return currentFilter.direction === 'asc'
-          ? new Date(a.createdDate).getTime() -
-              new Date(b.createdDate).getTime()
-          : new Date(b.createdDate).getTime() -
-              new Date(a.createdDate).getTime();
+          ? new Date(b.createdDate).getTime() -
+              new Date(a.createdDate).getTime()
+          : new Date(a.createdDate).getTime() -
+              new Date(b.createdDate).getTime();
       }
       return currentFilter.direction === 'asc'
         ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
@@ -122,6 +136,11 @@ export class TodoDataService {
     this.todoToSave.set(todo as Todo);
   }
 
+  setTodoToUpdate(todo: Todo): void {
+    console.log('Setting todo to update:', todo);
+    this.todoToUpdate.set(todo);
+  }
+
   private saveTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
     return this.http.post<ApiResponse<Todo>>(this.TODO_URL, todo).pipe(
       map((t) => ({ data: t.data } as Result<Todo>)),
@@ -135,6 +154,24 @@ export class TodoDataService {
           data: {} as Todo,
           error: this.errorService.formatError(err),
         } as Result<Todo>)
+      )
+    );
+  }
+
+  private updateTodo(todo: Partial<Todo>): Observable<Result<void>> {
+    return this.http.put<ApiResponse<void>>(this.TODO_URL, todo).pipe(
+      map(() => ({ data: undefined } as Result<void>)),
+      tap((t) => {
+        console.log(t);
+        this.currentTodos.update((todos) => {
+          todos = todos.filter((t) => t.id !== todo.id);
+          return [...todos, todo] as Todo[];
+        });
+      }),
+      catchError((err) =>
+        of({
+          error: this.errorService.formatError(err),
+        } as Result<void>)
       )
     );
   }

@@ -78,6 +78,8 @@ export class TodoFormComponent {
         dueDate: isoDate,
       } as Partial<Todo>;
       if (this.todoToEdit()) {
+        todo.id = this.todoToEdit()?.id;
+        todo.createdDate = this.todoToEdit()?.createdDate;
         this.updateTodo.emit(todo as Todo);
       } else {
         this.addTodo.emit(todo);

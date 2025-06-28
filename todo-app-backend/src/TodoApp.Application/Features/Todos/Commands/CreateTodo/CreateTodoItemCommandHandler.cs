@@ -1,7 +1,7 @@
 ﻿using TodoApp.Application.Contracts.Persistence;
 using TodoApp.Domain.Entities;
 
-namespace TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+namespace TodoApp.Application.Features.Todos.Commands.CreateTodo;
 public sealed class CreateTodoItemCommandHandler
 {
     private readonly ITodoItemRepository _repo;

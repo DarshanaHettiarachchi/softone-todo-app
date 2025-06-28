@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TodoItemComponent } from '../ui/todo-item/todo-item.component';
 import { TodoFormComponent } from '../ui/todo-form/todo-form.component';
 import { TodoDataService } from '../data-access/todo-data.service';
@@ -11,6 +6,7 @@ import { Todo } from '../data-access/todo.model';
 import { MatCardModule } from '@angular/material/card';
 import { TodoFilterFormComponent } from '../ui/todo-filter-form/todo-filter-form.component';
 import { TodoFilter } from '../data-access/filter.model';
+import { GlobalErrorComponent } from '../../shared/global-error-component/global-error.component';
 
 @Component({
   selector: 'app-todos',
@@ -19,6 +15,7 @@ import { TodoFilter } from '../data-access/filter.model';
     TodoFormComponent,
     TodoFilterFormComponent,
     MatCardModule,
+    GlobalErrorComponent,
   ],
   templateUrl: './todos.component.html',
   styleUrl: './todos.component.scss',
@@ -28,7 +25,7 @@ export class TodosComponent {
   private todoDataService = inject(TodoDataService);
 
   todos = this.todoDataService.todos;
-  todosError = this.todoDataService.todosError;
+  getTodosError = this.todoDataService.getTodosError;
   selectedTodo = this.todoDataService.selectedTodo;
   currentFilter = this.todoDataService.todosFilter;
 
@@ -45,7 +42,9 @@ export class TodosComponent {
     this.todoDataService.addTodo(todo);
   }
 
-  handleUpdateTodo(todo: Todo) {}
+  handleUpdateTodo(todo: Todo) {
+    this.todoDataService.setTodoToUpdate(todo);
+  }
 
   handleFilterChange(filter: TodoFilter) {
     console.log('Filter changed:', filter);

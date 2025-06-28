@@ -1,5 +1,4 @@
 <h1>Todos Component</h1>
-
 <section class="container">
   <div class="todo-list">
     <todo-filter-form
@@ -7,12 +6,12 @@
       (filterChanged)="handleFilterChange($event)"
     ></todo-filter-form>
     @for (todo of todos(); track todo.id) {
-    <app-todo-item
-      [todo]="todo"
-      (edit)="handleEditTodo($event)"
-    ></app-todo-item>
+      <app-todo-item
+        [todo]="todo"
+        (edit)="handleEditTodo($event)"
+      ></app-todo-item>
     } @empty {
-    <p>No items to display.</p>
+      <p>No items to display.</p>
     }
   </div>
   <div class="todo-form">

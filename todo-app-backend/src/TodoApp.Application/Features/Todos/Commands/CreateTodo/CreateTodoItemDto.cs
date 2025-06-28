@@ -1,4 +1,4 @@
-﻿namespace TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+﻿namespace TodoApp.Application.Features.Todos.Commands.CreateTodo;
 public sealed record CreateTodoItemDto
 {
     public int Id { get; init; }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TodoApp.Application.Features.Todos.Commands.CreateTodoItem;
+using TodoApp.Application.Features.Todos.Commands.CreateTodo;
+using TodoApp.Application.Features.Todos.Commands.UpdateTodo;
 using TodoApp.Application.Features.Todos.Queries.GetTodos;
 
 namespace TodoApp.Application;
@@ -10,6 +11,7 @@ public static class ApplicationServiceRegistration
 
         services.AddScoped<CreateTodoItemCommandHandler>();
         services.AddScoped<GetTodosHandler>();
+        services.AddScoped<UpdateTodoCommandHandler>();
 
         return services;
     }

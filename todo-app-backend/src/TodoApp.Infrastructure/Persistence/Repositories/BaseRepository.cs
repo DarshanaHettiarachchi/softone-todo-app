@@ -11,7 +11,7 @@ internal class BaseRepository<T> : IAsyncRepository<T> where T : class
         _dbContext = dbContext;
     }
 
-    public virtual async Task<T> GetByIdAsync(Guid id)
+    public virtual async Task<T> GetByIdAsync(int id)
     {
         return await _dbContext.Set<T>().FindAsync(id);
     }
