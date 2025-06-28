@@ -11,8 +11,11 @@ public sealed class CreateTodoItemCommandHandler
         _repo = repo;
     }
 
-    public async Task<int> HandleAsync(CreateTodoItemCommand command)
+    public async Task<CreateTodoItemCommandResponse> HandleAsync(CreateTodoItemCommand command)
     {
+
+        var response = new CreateTodoItemCommandResponse();
+
         var todoItem = new TodoItem
         {
             Title = command.Title,
@@ -21,8 +24,20 @@ public sealed class CreateTodoItemCommandHandler
             IsComplete = command.IsComplete,
         };
 
-        await _repo.AddAsync(todoItem);
+        var todoEntity = await _repo.AddAsync(todoItem);
 
-        return 1;
+        var createdTodoDto = new CreateTodoItemDto
+        {
+            Id = todoEntity.Id,
+            Title = todoEntity.Title,
+            Description = todoEntity.Description,
+            DueDate = todoEntity.DueDate,
+            Completed = todoEntity.IsComplete,
+            CreatedDate = todoEntity.CreatedDate,
+        };
+
+        response.Data = createdTodoDto;
+
+        return response;
     }
 }

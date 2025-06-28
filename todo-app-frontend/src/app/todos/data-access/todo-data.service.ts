@@ -14,7 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   providedIn: 'root',
 })
 export class TodoDataService {
-  private todoUrl = 'api/todos';
+  private readonly TODO_URL = 'api/todos';
 
   private http = inject(HttpClient);
   private errorService = inject(HttpErrorService);
@@ -23,6 +23,7 @@ export class TodoDataService {
 
   private todoToSave = signal<Todo | null>(null);
   private todoToSave$ = toObservable(this.todoToSave);
+  private currentTodos = signal<Todo[]>([]);
 
   selectedTodo = signal<Todo | null>(null);
   todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
@@ -38,21 +39,14 @@ export class TodoDataService {
     });
   }
 
-  private isFilterEqual(a: TodoFilter, b: TodoFilter): boolean {
-    return (
-      a.status === b.status &&
-      a.sortBy === b.sortBy &&
-      a.direction === b.direction
-    );
-  }
-
   private todosResponse$ = this.http
-    .get<ApiResponse<Todo[]>>(this.todoUrl)
+    .get<ApiResponse<Todo[]>>(this.TODO_URL)
     .pipe(
-      map((p) => ({ data: p.data } as Result<Todo[]>)),
-      tap((p) => {
+      map((t) => ({ data: t.data } as Result<Todo[]>)),
+      tap((t) => {
         this.selectedTodo.set(null); // Reset selected todo on new fetch
-        console.log(JSON.stringify(p));
+        this.currentTodos.set(t.data || []);
+        console.log(t.data);
       }),
       catchError((err) =>
         of({
@@ -69,36 +63,16 @@ export class TodoDataService {
     })
   );
 
-  private saveTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
-    return this.http.post<ApiResponse<Todo>>(this.todoUrl, todo).pipe(
-      map((p) => ({ data: p.data } as Result<Todo>)),
-      tap((p) => {
-        this.selectedTodo.set(null); // Reset selected todo on new fetch
-        console.log(JSON.stringify(p));
-      }),
-      catchError((err) =>
-        of({
-          data: {} as Todo,
-          error: this.errorService.formatError(err),
-        } as Result<Todo>)
-      )
-    );
-  }
-
-  private buildParams(filter: TodoFilter): HttpParams {
-    return new HttpParams()
-      .set('status', filter.status)
-      .set('sortBy', filter.sortBy)
-      .set('direction', filter.direction);
-  }
-
   private todosResult = toSignal(this.todosResponse$, {
     initialValue: { data: [] } as Result<Todo[]>,
   });
 
+  //receivedTodos = computed(() => this.todosResult().data);
+  todosError = computed(() => this.todosResult().error);
+
   todos = computed(() => {
     const currentFilter = this.todosFilter();
-    const todos = this.todosResult().data;
+    const todos = this.currentTodos();
 
     let filteredTodos = todos?.filter((todo) => {
       if (currentFilter.status === 'all') {
@@ -126,8 +100,6 @@ export class TodoDataService {
     return filteredTodos;
   });
 
-  todosError = computed(() => this.todosResult().error);
-
   private todoSavedResult = toSignal(this.todoSavedResult$, {
     initialValue: { data: {} as Todo } as Result<Todo>,
   });
@@ -147,9 +119,31 @@ export class TodoDataService {
   }
 
   addTodo(todo: Partial<Todo>): void {
-    //this.saveTodo(todo);
     this.todoToSave.set(todo as Todo);
-    // this.todosFilter.set(DEFAULT_TODO_FILTER);
-    // this.reloadTrigger.update((x) => x + 1);
+  }
+
+  private saveTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
+    return this.http.post<ApiResponse<Todo>>(this.TODO_URL, todo).pipe(
+      map((t) => ({ data: t.data } as Result<Todo>)),
+      tap((t) => {
+        console.log(t);
+        this.currentTodos.update((todos) => [...todos, t.data] as Todo[]);
+        this.todoToSave.set(null);
+      }),
+      catchError((err) =>
+        of({
+          data: {} as Todo,
+          error: this.errorService.formatError(err),
+        } as Result<Todo>)
+      )
+    );
+  }
+
+  private isFilterEqual(a: TodoFilter, b: TodoFilter): boolean {
+    return (
+      a.status === b.status &&
+      a.sortBy === b.sortBy &&
+      a.direction === b.direction
+    );
   }
 }
