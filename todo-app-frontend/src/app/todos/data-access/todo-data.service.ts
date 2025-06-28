@@ -2,9 +2,16 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Todo } from './todo.model';
 import { Result } from '../../utils/result.model';
-import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { Observable, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { HttpErrorService } from '../../utils/http-error.service';
 import { DEFAULT_TODO_FILTER, TodoFilter } from './filter.model';
 
@@ -31,7 +38,27 @@ export class TodoDataService {
     )
   );
 
-  private todosResult2$ = toObservable(this.todosFilter).pipe(
+  private isFilterEqual(a: TodoFilter, b: TodoFilter): boolean {
+    return (
+      a.status === b.status &&
+      a.sortBy === b.sortBy &&
+      a.direction === b.direction
+    );
+  }
+
+  private todosFilter$ = toObservable(this.todosFilter).pipe(
+    distinctUntilChanged(this.isFilterEqual)
+  );
+
+  private reloadTrigger = signal(0);
+
+  private combinedTrigger$ = combineLatest([
+    this.todosFilter$,
+    toObservable(this.reloadTrigger),
+  ]);
+
+  private todosResult2$ = this.combinedTrigger$.pipe(
+    debounceTime(100),
     switchMap(() => this.getTodos())
   );
 
@@ -76,6 +103,7 @@ export class TodoDataService {
   }
 
   addTodo(todo: Partial<Todo>): void {
-    this.todosFilter.set(DEFAULT_TODO_FILTER); // Reset filter on add
+    this.todosFilter.set(DEFAULT_TODO_FILTER);
+    this.reloadTrigger.update((x) => x + 1);
   }
 }
