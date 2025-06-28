@@ -1,8 +1,20 @@
 <mat-card class="todo-item" appearance="outlined" color="primary">
   <mat-card-header>
-    <mat-card-title>{{ todo().title }}</mat-card-title>
+    <mat-card-title>
+      <span class="todo-title">
+        @if (todo().completed) {
+          <mat-icon
+            class="task-done-icon"
+            aria-hidden="false"
+            aria-label="Task done icon"
+            fontIcon="check_circle"
+          ></mat-icon>
+        }
+        {{ todo().title }}
+      </span>
+    </mat-card-title>
     <mat-card-subtitle>
-      <span>Due on: {{ todo().dueDate | date : "longDate" }}</span>
+      <span>Due on: {{ todo().dueDate | date: "longDate" }}</span>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>

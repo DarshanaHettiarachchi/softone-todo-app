@@ -1,9 +1,9 @@
-@use "@angular/material" as mat;
+.todo-title {
+  display: inline-flex;
+  align-items: center;
+}
 
-// .todo-item {
-//   @include mat.card-overrides(
-//     (
-//       outlined-container-color: red,
-//     )
-//   );
-// }
+.task-done-icon {
+  margin-right: 8px;
+  color: green;
+}
