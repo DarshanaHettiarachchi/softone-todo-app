@@ -65,7 +65,7 @@ export class TodoDataService {
   private todoSavedResult$ = this.todoToSave$.pipe(
     filter(Boolean),
     switchMap((todo) => {
-      return this.saveTodo(todo);
+      return this.addTodo(todo);
     }),
   );
 
@@ -88,7 +88,7 @@ export class TodoDataService {
 
   //receivedTodos = computed(() => this.todosResult().data);
 
-  todos = computed(() => {
+  filteredTodos = computed(() => {
     const currentFilter = this.todosFilter();
     const todos = this.currentTodos();
 
@@ -129,14 +129,14 @@ export class TodoDataService {
     this.selectedTodo.set(todo);
   }
 
-  todoFilterChanged(filter: TodoFilter): void {
+  setTodoFilter(filter: TodoFilter): void {
     if (this.isFilterEqual(this.todosFilter(), filter)) {
       return; // No change in filter, do nothing
     }
     this.todosFilter.set(filter);
   }
 
-  addTodo(todo: Partial<Todo>): void {
+  setTodoToSave(todo: Partial<Todo>): void {
     this.todoToSave.set(todo as Todo);
   }
 
@@ -145,7 +145,7 @@ export class TodoDataService {
     this.todoToUpdate.set(todo);
   }
 
-  private saveTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
+  private addTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
     this.todoSaving.set(true);
     return this.http.post<ApiResponse<Todo>>(this.TODO_URL, todo).pipe(
       map((t) => ({ data: t.data }) as Result<Todo>),

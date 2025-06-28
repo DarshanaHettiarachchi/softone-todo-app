@@ -26,7 +26,7 @@ export class TodosComponent {
 
   todosLoading = this.todoDataService.todosLoading;
   todosSaving = this.todoDataService.todoSaving;
-  todos = this.todoDataService.todos;
+  todos = this.todoDataService.filteredTodos;
   todosLoadingError = this.todoDataService.getTodosError;
   selectedTodo = this.todoDataService.selectedTodo;
   currentFilter = this.todoDataService.todosFilter;
@@ -41,7 +41,7 @@ export class TodosComponent {
 
   handleAddTodo(todo: Partial<Todo>) {
     console.log('Adding todo:', todo);
-    this.todoDataService.addTodo(todo);
+    this.todoDataService.setTodoToSave(todo);
   }
 
   handleUpdateTodo(todo: Todo) {
@@ -50,6 +50,6 @@ export class TodosComponent {
 
   handleFilterChange(filter: TodoFilter) {
     console.log('Filter changed:', filter);
-    this.todoDataService.todoFilterChanged(filter);
+    this.todoDataService.setTodoFilter(filter);
   }
 }

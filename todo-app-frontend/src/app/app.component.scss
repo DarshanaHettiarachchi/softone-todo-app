@@ -1,3 +1,14 @@
+@use "@angular/material" as mat;
+
+.main-toolbar {
+  @include mat.toolbar-overrides(
+    (
+      container-background-color: purple,
+      container-text-color: white,
+    )
+  );
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto; /* Center horizontally */
