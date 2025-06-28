@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal, effect } from '@angular/core';
 import { Todo } from './todo.model';
 import { Result } from '../../utils/result.model';
 import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { HttpErrorService } from '../../utils/http-error.service';
 import { DEFAULT_TODO_FILTER, TodoFilter } from './filter.model';
 import { ApiResponse } from './todo-api-response.model';
 import { Observable, of } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -17,12 +18,25 @@ export class TodoDataService {
 
   private http = inject(HttpClient);
   private errorService = inject(HttpErrorService);
+  private router = inject(Router);
+  private currentRoute = inject(ActivatedRoute);
 
   private todoToSave = signal<Todo | null>(null);
   private todoToSave$ = toObservable(this.todoToSave);
 
   selectedTodo = signal<Todo | null>(null);
   todosFilter = signal<TodoFilter>(DEFAULT_TODO_FILTER);
+
+  constructor() {
+    effect(() => {
+      const currentFilter = this.todosFilter();
+      this.router.navigate([], {
+        relativeTo: this.currentRoute,
+        queryParams: currentFilter,
+        queryParamsHandling: 'merge',
+      });
+    });
+  }
 
   private isFilterEqual(a: TodoFilter, b: TodoFilter): boolean {
     return (
