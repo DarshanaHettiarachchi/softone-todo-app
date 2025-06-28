@@ -25,7 +25,9 @@ public class TodoDbContext : DbContext
             Title = "Todo 1",
             Description = "Todo 1 Description",
             DueDate = new DateOnly(2025, 7, 10),
-            IsComplete = false
+            IsComplete = false,
+            CreatedDate = DateTime.Now,
+            CreatedBy = "1"
         });
 
         modelBuilder.Entity<TodoItem>().HasData(new TodoItem
@@ -34,7 +36,9 @@ public class TodoDbContext : DbContext
             Title = "Todo 1",
             Description = "Todo 1 Description",
             DueDate = new DateOnly(2025, 7, 12),
-            IsComplete = false
+            IsComplete = true,
+            CreatedDate = DateTime.Now,
+            CreatedBy = "1"
         });
 
     }

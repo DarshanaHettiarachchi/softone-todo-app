@@ -22,7 +22,11 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DueDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    IsComplete = table.Column<bool>(type: "bit", nullable: false)
+                    IsComplete = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,11 +35,11 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "ToDoItems",
-                columns: new[] { "Id", "Description", "DueDate", "IsComplete", "Title" },
+                columns: new[] { "Id", "CreatedBy", "CreatedDate", "Description", "DueDate", "IsComplete", "LastModifiedBy", "LastModifiedDate", "Title" },
                 values: new object[,]
                 {
-                    { 1, "Todo 1 Description", new DateOnly(2025, 7, 10), false, "Todo 1" },
-                    { 2, "Todo 1 Description", new DateOnly(2025, 7, 12), false, "Todo 1" }
+                    { 1, "1", new DateTime(2025, 6, 28, 17, 49, 58, 656, DateTimeKind.Local).AddTicks(5212), "Todo 1 Description", new DateOnly(2025, 7, 10), false, null, null, "Todo 1" },
+                    { 2, "1", new DateTime(2025, 6, 28, 17, 49, 58, 656, DateTimeKind.Local).AddTicks(5254), "Todo 1 Description", new DateOnly(2025, 7, 12), true, null, null, "Todo 1" }
                 });
         }
 

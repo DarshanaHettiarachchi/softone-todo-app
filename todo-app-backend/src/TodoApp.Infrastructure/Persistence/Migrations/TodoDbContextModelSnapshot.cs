@@ -30,6 +30,12 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -39,6 +45,12 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("IsComplete")
                         .HasColumnType("bit");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -53,6 +65,8 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 1,
+                            CreatedBy = "1",
+                            CreatedDate = new DateTime(2025, 6, 28, 17, 49, 58, 656, DateTimeKind.Local).AddTicks(5212),
                             Description = "Todo 1 Description",
                             DueDate = new DateOnly(2025, 7, 10),
                             IsComplete = false,
@@ -61,9 +75,11 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         new
                         {
                             Id = 2,
+                            CreatedBy = "1",
+                            CreatedDate = new DateTime(2025, 6, 28, 17, 49, 58, 656, DateTimeKind.Local).AddTicks(5254),
                             Description = "Todo 1 Description",
                             DueDate = new DateOnly(2025, 7, 12),
-                            IsComplete = false,
+                            IsComplete = true,
                             Title = "Todo 1"
                         });
                 });

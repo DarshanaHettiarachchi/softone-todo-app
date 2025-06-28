@@ -86,13 +86,27 @@ export class TodoDataService {
     const currentFilter = this.todosFilter();
     const todos = this.todosResult().data;
 
-    const filteredTodos = todos?.filter((todo) => {
+    let filteredTodos = todos?.filter((todo) => {
       if (currentFilter.status === 'all') {
         return true; // No filtering by status
       }
       return currentFilter.status === 'completed'
         ? todo.completed
         : !todo.completed;
+    });
+
+    filteredTodos = filteredTodos?.sort((a, b) => {
+      console.log('sorting');
+      if (currentFilter.sortBy === 'created') {
+        return currentFilter.direction === 'asc'
+          ? new Date(a.createdDate).getTime() -
+              new Date(b.createdDate).getTime()
+          : new Date(b.createdDate).getTime() -
+              new Date(a.createdDate).getTime();
+      }
+      return currentFilter.direction === 'asc'
+        ? new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+        : new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
     });
 
     return filteredTodos;

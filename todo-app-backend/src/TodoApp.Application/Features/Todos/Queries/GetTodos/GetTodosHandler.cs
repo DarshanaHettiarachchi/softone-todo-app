@@ -20,7 +20,8 @@ public class GetTodosHandler
             Title = x.Title,
             Description = x.Description,
             DueDate = x.DueDate,
-            IsComplete = x.IsComplete
+            Completed = x.IsComplete,
+            CreatedDate = x.CreatedDate,
         }).ToList();
 
         response.Success = true;

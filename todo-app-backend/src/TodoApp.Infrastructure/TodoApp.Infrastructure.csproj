@@ -20,4 +20,8 @@
     <ProjectReference Include="..\TodoApp.Domain\TodoApp.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
+
 </Project>
