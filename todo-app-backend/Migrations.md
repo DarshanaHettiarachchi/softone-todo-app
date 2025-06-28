@@ -9,7 +9,7 @@ This guide shows how to add and apply Entity Framework Core migrations when your
 ```bash
 dotnet tool install --global dotnet-ef
 
-cd src/Todo.Infrastructure
+cd src/TodoApp.Infrastructure
 
 
 dotnet ef migrations add [MigratinName] `
