@@ -105,18 +105,20 @@ export class TodoFormComponent {
   onsubmit() {
     if (this.form.valid) {
       const jsDate: Date = this.form.value.dueDate as Date;
-      const isoDate = jsDate.toISOString().slice(0, 10);
+      const year = jsDate.getFullYear();
+      const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+      const day = String(jsDate.getDate()).padStart(2, '0');
+      const isoDate = `${year}-${month}-${day}`;
       const todo: Partial<Todo> = {
         ...this.form.value,
         dueDate: isoDate,
       } as Partial<Todo>;
       if (this.todoToEdit()) {
+        console.log('Updating todo:', todo);
         todo.id = this.todoToEdit()?.id;
         todo.createdDate = this.todoToEdit()?.createdDate;
         this.updateTodo.emit(todo as Todo);
       } else {
-        console.log('Adding todo foem foem:', todo);
-
         this.addTodo.emit(todo);
       }
       this.form.reset();
