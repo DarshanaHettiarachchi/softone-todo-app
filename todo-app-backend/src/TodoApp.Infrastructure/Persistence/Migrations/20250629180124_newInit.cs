@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TodoApp.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class addUsers : Migration
+    public partial class newInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DueDate = table.Column<DateOnly>(type: "date", nullable: false),
                     IsComplete = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
@@ -64,8 +64,8 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "Description", "DueDate", "IsComplete", "LastModifiedBy", "LastModifiedDate", "Title", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "1", new DateTime(2025, 6, 29, 14, 44, 29, 60, DateTimeKind.Local).AddTicks(7311), "Todo 1 Description", new DateOnly(2025, 8, 10), false, null, null, "Todo 1", 1 },
-                    { 2, "1", new DateTime(2025, 6, 29, 14, 44, 29, 60, DateTimeKind.Local).AddTicks(7335), "Todo 1 Description", new DateOnly(2025, 8, 12), true, null, null, "Todo 2", 1 }
+                    { 1, "1", new DateTime(2025, 6, 29, 23, 31, 22, 993, DateTimeKind.Local).AddTicks(5663), "Todo 1 Description", new DateOnly(2025, 8, 10), false, null, null, "Todo 1", 1 },
+                    { 2, "1", new DateTime(2025, 6, 29, 23, 31, 22, 993, DateTimeKind.Local).AddTicks(5686), "Todo 1 Description", new DateOnly(2025, 8, 12), true, null, null, "Todo 2", 1 }
                 });
 
             migrationBuilder.CreateIndex(

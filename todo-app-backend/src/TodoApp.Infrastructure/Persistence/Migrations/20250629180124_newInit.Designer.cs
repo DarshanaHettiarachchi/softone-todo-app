@@ -12,8 +12,8 @@ using TodoApp.Infrastructure.Persistence;
 namespace TodoApp.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TodoDbContext))]
-    [Migration("20250629091430_addUsers")]
-    partial class addUsers
+    [Migration("20250629180124_newInit")]
+    partial class newInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,6 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("DueDate")
@@ -74,7 +73,7 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         {
                             Id = 1,
                             CreatedBy = "1",
-                            CreatedDate = new DateTime(2025, 6, 29, 14, 44, 29, 60, DateTimeKind.Local).AddTicks(7311),
+                            CreatedDate = new DateTime(2025, 6, 29, 23, 31, 22, 993, DateTimeKind.Local).AddTicks(5663),
                             Description = "Todo 1 Description",
                             DueDate = new DateOnly(2025, 8, 10),
                             IsComplete = false,
@@ -85,7 +84,7 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         {
                             Id = 2,
                             CreatedBy = "1",
-                            CreatedDate = new DateTime(2025, 6, 29, 14, 44, 29, 60, DateTimeKind.Local).AddTicks(7335),
+                            CreatedDate = new DateTime(2025, 6, 29, 23, 31, 22, 993, DateTimeKind.Local).AddTicks(5686),
                             Description = "Todo 1 Description",
                             DueDate = new DateOnly(2025, 8, 12),
                             IsComplete = true,
