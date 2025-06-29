@@ -10,6 +10,14 @@
             fontIcon="check_circle"
           ></mat-icon>
         }
+        @if (isOverdue) {
+          <mat-icon
+            class="overdue-icon"
+            aria-hidden="false"
+            aria-label="Overdue icon"
+            fontIcon="warning"
+          ></mat-icon>
+        }
         {{ todo().title }}
       </span>
     </mat-card-title>
@@ -23,9 +31,11 @@
     </p>
   </mat-card-content>
   <mat-card-footer>
-    <button mat-button (click)="onEdit()">
-      <mat-icon>edit</mat-icon>
-      Edit
-    </button>
+    @if (!todo().completed) {
+      <button mat-button (click)="onEdit()">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+    }
   </mat-card-footer>
 </mat-card>

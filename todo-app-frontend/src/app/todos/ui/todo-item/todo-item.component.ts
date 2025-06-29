@@ -28,6 +28,12 @@ export class TodoItemComponent {
   todo = input.required<Todo>();
   edit = output<Todo>();
 
+  get isOverdue(): boolean {
+    const today = new Date();
+    const dueDate = new Date(this.todo().dueDate);
+    return dueDate < today && !this.todo().completed;
+  }
+
   onEdit(): void {
     this.edit.emit(this.todo());
   }

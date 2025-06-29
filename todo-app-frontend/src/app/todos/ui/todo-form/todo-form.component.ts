@@ -103,6 +103,7 @@ export class TodoFormComponent {
   }
 
   onsubmit() {
+    this.form.markAllAsTouched();
     if (this.form.valid) {
       const jsDate: Date = this.form.value.dueDate as Date;
       const year = jsDate.getFullYear();
