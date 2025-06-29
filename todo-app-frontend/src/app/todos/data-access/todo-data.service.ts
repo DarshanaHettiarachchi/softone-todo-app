@@ -190,22 +190,25 @@ export class TodoDataService {
   }
 
   private updateTodo(todo: Partial<Todo>): Observable<Result<void>> {
+    this.todoSaving.set(true);
     return this.http
       .put<ApiResponse<void>>(this.TODO_URL + '/' + todo.id, todo)
       .pipe(
         map(() => ({ data: undefined } as Result<void>)),
         tap((t) => {
+          this.todoSaving.set(false);
           console.log(t);
           this.currentTodos.update((todos) => {
             todos = todos.filter((t) => t.id !== todo.id);
             return [...todos, todo] as Todo[];
           });
         }),
-        catchError((err) =>
-          of({
+        catchError((err) => {
+          this.todoSaving.set(false);
+          return of({
             error: this.errorService.formatError(err),
-          } as Result<void>)
-        )
+          } as Result<void>);
+        })
       );
   }
 
