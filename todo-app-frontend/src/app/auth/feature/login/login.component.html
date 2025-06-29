@@ -1,0 +1,21 @@
+<section class="login">
+  <h2>Login</h2>
+  <form class="login-form" [formGroup]="form">
+    <div class="form-control">
+      <label>Email</label>
+      <input placeholder="Enter your email" formControlName="email" />
+    </div>
+
+    <div class="form-control">
+      <label>Password</label>
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Enter your password"
+      />
+    </div>
+    <div class="form-actions">
+      <button mat-flat-button (click)="onLogin()">Login</button>
+    </div>
+  </form>
+</section>

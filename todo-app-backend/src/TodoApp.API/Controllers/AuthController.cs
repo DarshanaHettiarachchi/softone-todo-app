@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoApp.Application.Contracts.Authentication;
 using TodoApp.Application.Models;
+using TodoApp.Infrastructure.Authentication;
 
 namespace TodoApp.Api.Controllers;
-[Route("api/[controller]")]
+[Route("api/auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -26,5 +27,24 @@ public class AuthController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+    }
+
+    //Not sending password over plain http
+    //Just for the demo
+    [HttpPost("login")]
+    public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
+    {
+
+        if (!await _userService.ValidateCredentialsAsync(loginDto.email, loginDto.Password))
+        {
+            return Unauthorized(new { error = "Invalid email or password" });
+        }
+
+        string email = loginDto.email;
+
+        return Ok(new
+        {
+            email,
+        });
     }
 }
