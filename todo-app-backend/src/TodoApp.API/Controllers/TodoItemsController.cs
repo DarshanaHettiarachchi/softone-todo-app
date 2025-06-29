@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TodoApp.Application.Features.Todos.Commands.CreateTodo;
 using TodoApp.Application.Features.Todos.Commands.DeleteToDo;
 using TodoApp.Application.Features.Todos.Commands.ToggleCompleteStatus;
@@ -37,7 +38,7 @@ public class ToDoItemsController : ControllerBase
         return Ok(id);
     }
 
-
+    [Authorize]
     [HttpGet()]
     public async Task<ActionResult<string[]>> Index()
     {

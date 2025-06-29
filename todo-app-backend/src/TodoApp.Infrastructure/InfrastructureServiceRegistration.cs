@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TodoApp.Application.Contracts.Authentication;
 using TodoApp.Application.Contracts.Persistence;
+using TodoApp.Infrastructure.Authentication;
 using TodoApp.Infrastructure.Persistence;
 using TodoApp.Infrastructure.Persistence.Repositories;
 
@@ -16,6 +19,10 @@ public static class InfrastructureServiceRegistration
         services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
 
         services.AddScoped<ITodoItemRepository, TodoItemRepository>();
+        services.AddScoped<IUserService, UserService>();
+
+        services.AddAuthentication("Basic")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
 
         return services;
     }

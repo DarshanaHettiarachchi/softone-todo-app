@@ -57,7 +57,12 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ToDoItems");
 
@@ -66,22 +71,69 @@ namespace TodoApp.Infrastructure.Persistence.Migrations
                         {
                             Id = 1,
                             CreatedBy = "1",
-                            CreatedDate = new DateTime(2025, 6, 28, 17, 49, 58, 656, DateTimeKind.Local).AddTicks(5212),
+                            CreatedDate = new DateTime(2025, 6, 29, 14, 44, 29, 60, DateTimeKind.Local).AddTicks(7311),
                             Description = "Todo 1 Description",
-                            DueDate = new DateOnly(2025, 7, 10),
+                            DueDate = new DateOnly(2025, 8, 10),
                             IsComplete = false,
-                            Title = "Todo 1"
+                            Title = "Todo 1",
+                            UserId = 1
                         },
                         new
                         {
                             Id = 2,
                             CreatedBy = "1",
-                            CreatedDate = new DateTime(2025, 6, 28, 17, 49, 58, 656, DateTimeKind.Local).AddTicks(5254),
+                            CreatedDate = new DateTime(2025, 6, 29, 14, 44, 29, 60, DateTimeKind.Local).AddTicks(7335),
                             Description = "Todo 1 Description",
-                            DueDate = new DateOnly(2025, 7, 12),
+                            DueDate = new DateOnly(2025, 8, 12),
                             IsComplete = true,
-                            Title = "Todo 1"
+                            Title = "Todo 2",
+                            UserId = 1
                         });
+                });
+
+            modelBuilder.Entity("TodoApp.Domain.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "testuser@email.com",
+                            PasswordHash = "#sdfsdfsdfsdf"
+                        });
+                });
+
+            modelBuilder.Entity("TodoApp.Domain.Entities.TodoItem", b =>
+                {
+                    b.HasOne("TodoApp.Domain.Entities.User", "User")
+                        .WithMany("TodoItems")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TodoApp.Domain.Entities.User", b =>
+                {
+                    b.Navigation("TodoItems");
                 });
 #pragma warning restore 612, 618
         }

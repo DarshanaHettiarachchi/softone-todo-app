@@ -14,31 +14,41 @@ public class TodoDbContext : DbContext
     }
 
     public DbSet<TodoItem> ToDoItems { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TodoDbContext).Assembly);
+
+        modelBuilder.Entity<User>().HasData(new User
+        {
+            Id = 1,
+            Email = "testuser@email.com",
+            PasswordHash = "#sdfsdfsdfsdf"
+        });
 
         modelBuilder.Entity<TodoItem>().HasData(new TodoItem
         {
             Id = 1,
             Title = "Todo 1",
             Description = "Todo 1 Description",
-            DueDate = new DateOnly(2025, 7, 10),
+            DueDate = new DateOnly(2025, 8, 10),
             IsComplete = false,
             CreatedDate = DateTime.Now,
-            CreatedBy = "1"
+            CreatedBy = "1",
+            UserId = 1,
         });
 
         modelBuilder.Entity<TodoItem>().HasData(new TodoItem
         {
             Id = 2,
-            Title = "Todo 1",
+            Title = "Todo 2",
             Description = "Todo 1 Description",
-            DueDate = new DateOnly(2025, 7, 12),
+            DueDate = new DateOnly(2025, 8, 12),
             IsComplete = true,
             CreatedDate = DateTime.Now,
-            CreatedBy = "1"
+            CreatedBy = "1",
+            UserId = 1
         });
 
     }

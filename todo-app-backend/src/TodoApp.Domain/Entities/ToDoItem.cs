@@ -8,4 +8,6 @@ public class TodoItem : AuditableEntity
     public string Description { get; set; }
     public DateOnly DueDate { get; set; }
     public bool IsComplete { get; set; }
+    public int UserId { get; set; }
+    public User User { get; set; }
 }
