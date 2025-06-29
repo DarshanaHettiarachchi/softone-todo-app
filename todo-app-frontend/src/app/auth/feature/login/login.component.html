@@ -1,9 +1,17 @@
 <section class="login">
+  @if (loginError()) {
+    <p class="login-error">Login failed!</p>
+  }
   <h2>Login</h2>
   <form class="login-form" [formGroup]="form">
     <div class="form-control">
       <label>Email</label>
       <input placeholder="Enter your email" formControlName="email" />
+      @if (form.get("email")?.touched || form.get("email")?.dirty) {
+        @if (form.get("email")?.hasError("required")) {
+          <span class="form-error-msg">Email is required.</span>
+        }
+      }
     </div>
 
     <div class="form-control">
@@ -13,6 +21,11 @@
         formControlName="password"
         placeholder="Enter your password"
       />
+      @if (form.get("password")?.touched || form.get("password")?.dirty) {
+        @if (form.get("password")?.hasError("required")) {
+          <span class="form-error-msg">Password is required.</span>
+        }
+      }
     </div>
     <div class="form-actions">
       <button mat-flat-button (click)="onLogin()">Login</button>

@@ -1,43 +1,9 @@
+@import "../../../../styles/forms";
+
+@include formStyles();
+
 :host {
   position: relative;
-}
-
-input {
-  margin-left: 5px;
-}
-
-.form-control {
-  margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-control input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-.form-control textarea {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: inherit;
-  font-size: 16px;
-  min-height: 100px;
-}
-
-.form-control select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-.form-control label {
-  margin-bottom: 5px;
-  margin-left: 5px;
 }
 
 .form-actions {
@@ -58,10 +24,4 @@ input {
   justify-content: center;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.6);
-}
-
-.form-error-msg {
-  display: inline-block;
-  padding: 8px;
-  color: red;
 }

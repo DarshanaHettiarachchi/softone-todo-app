@@ -1,7 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { AuthService } from '../../../shared/auth/auth.service';
 import { Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
@@ -15,9 +20,11 @@ import { MatCardModule } from '@angular/material/card';
 export class LoginComponent {
   fb = inject(FormBuilder);
 
+  loginError = signal(false);
+
   form = this.fb.group({
-    email: [''],
-    password: [''],
+    email: ['', { validators: Validators.required }],
+    password: ['', { validators: Validators.required }],
   });
 
   authService = inject(AuthService);
@@ -25,6 +32,8 @@ export class LoginComponent {
   router = inject(Router);
 
   async onLogin() {
+    this.form.markAllAsTouched();
+    this.loginError.set(false);
     try {
       const { email, password } = this.form.value;
       if (!email || !password) {
@@ -34,8 +43,8 @@ export class LoginComponent {
       await this.authService.login(email, password);
       await this.router.navigate(['/todos']);
     } catch (err) {
-      console.log('Login failed:', err);
       console.error(err);
+      this.loginError.set(true);
     }
   }
 }

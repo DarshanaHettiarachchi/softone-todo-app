@@ -18,6 +18,7 @@
 
   .form-control textarea {
     padding: 10px;
+    font-family: inherit;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
@@ -45,5 +46,11 @@
   .form-actions button {
     text-transform: uppercase;
     margin-right: 10px;
+  }
+
+  .form-error-msg {
+    display: inline-block;
+    padding: 7px;
+    color: red;
   }
 }

@@ -2,8 +2,8 @@
   <mat-toolbar class="main-toolbar">
     <span>Todo App</span>
     <span class="spacer"></span>
-    <mat-icon>account_circle</mat-icon>
     @if(authUser()){
+    <mat-icon>account_circle</mat-icon>
     <span style="font-size: 1rem">{{ authUser()?.email }}</span>
     <button mat-stroked-button style="margin-left: 1rem" (click)="logOut()">
       Sign Out
