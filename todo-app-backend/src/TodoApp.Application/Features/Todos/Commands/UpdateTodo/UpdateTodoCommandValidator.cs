@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
+using TodoApp.Application.Features.Todos.Commands.UpdateTodo;
 
 namespace TodoApp.Application.Features.Todos.Commands.CreateTodo;
-public sealed class CreateTodoItemCommandValidator : AbstractValidator<CreateTodoItemCommand>
+public sealed class UpdateTodoCommandValidator : AbstractValidator<UpdateTodoCommand>
 {
-    public CreateTodoItemCommandValidator()
+    public UpdateTodoCommandValidator()
     {
         RuleFor(p => p.Title)
                 .NotEmpty().WithMessage("{PropertyName} is required.")

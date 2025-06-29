@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using TodoApp.Api.Middleware;
 using TodoApp.Application;
 using TodoApp.Infrastructure;
 
@@ -49,6 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCustomExceptionHandler();
 
 app.UseHttpsRedirection();
 

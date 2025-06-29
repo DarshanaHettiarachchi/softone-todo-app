@@ -1,6 +1,7 @@
 ﻿using TodoApp.Application.Contracts.Authorization;
 using TodoApp.Application.Contracts.Persistence;
 using TodoApp.Application.Exceptions;
+using TodoApp.Application.Features.Todos.Commands.CreateTodo;
 using TodoApp.Domain.Entities;
 
 namespace TodoApp.Application.Features.Todos.Commands.UpdateTodo;
@@ -17,6 +18,13 @@ public class UpdateTodoCommandHandler
 
     public async Task Handle(int id, UpdateTodoCommand command)
     {
+        var validator = new UpdateTodoCommandValidator();
+        var validationResult = await validator.ValidateAsync(command);
+
+        if (validationResult.Errors.Count > 0)
+        {
+            throw new ValidationException(validationResult);
+        }
 
         var todoToUpdate = await _todoItemRepository.GetByIdAsync(id);
 

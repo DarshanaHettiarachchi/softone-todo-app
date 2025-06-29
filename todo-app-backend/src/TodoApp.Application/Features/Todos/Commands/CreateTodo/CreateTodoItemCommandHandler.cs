@@ -17,6 +17,13 @@ public sealed class CreateTodoItemCommandHandler
 
     public async Task<CreateTodoItemCommandResponse> HandleAsync(CreateTodoItemCommand command)
     {
+        var validator = new CreateTodoItemCommandValidator();
+        var validationResult = await validator.ValidateAsync(command);
+
+        if (validationResult.Errors.Count > 0)
+        {
+            throw new ValidationException(validationResult);
+        }
 
         var response = new CreateTodoItemCommandResponse();
 
@@ -24,7 +31,7 @@ public sealed class CreateTodoItemCommandHandler
 
         if (userId == null)
         {
-            throw new BadRequestException("User retrival failed");
+            throw new ForbiddenAccessException();
         }
 
         var todoItem = new TodoItem
