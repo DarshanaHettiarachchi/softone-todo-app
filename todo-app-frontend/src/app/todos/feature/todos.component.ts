@@ -55,4 +55,8 @@ export class TodosComponent {
   handleFilterChange(filter: TodoFilter) {
     this.todoDataService.setTodoFilter(filter);
   }
+
+  handleToggleComplete(todo: Todo) {
+    this.todoDataService.setTodoToToggleStatus(todo);
+  }
 }

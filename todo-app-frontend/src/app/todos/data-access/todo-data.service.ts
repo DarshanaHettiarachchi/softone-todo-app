@@ -28,9 +28,11 @@ export class TodoDataService {
   private currentTodos = signal<Todo[]>([]);
   private todoToUpdate = signal<Todo | null>(null);
   private todoToDelete = signal<Todo | null>(null);
+  private todoToToggleStatus = signal<Todo | null>(null);
 
   private todoToUpdate$ = toObservable(this.todoToUpdate);
   private todoToDelete$ = toObservable(this.todoToDelete);
+  private todoToToggleStatus$ = toObservable(this.todoToToggleStatus);
 
   private todoUpdateResult$ = this.todoToUpdate$.pipe(
     filter(Boolean),
@@ -51,6 +53,17 @@ export class TodoDataService {
   );
 
   private todoDeleteResult = toSignal(this.todoDeleteResult$, {
+    initialValue: null,
+  });
+
+  private todoToggleStatusResult$ = this.todoToToggleStatus$.pipe(
+    filter(Boolean),
+    switchMap((todo) => {
+      return this.toggleStatus(todo);
+    })
+  );
+
+  private todoToggleStatusResult = toSignal(this.todoToggleStatusResult$, {
     initialValue: null,
   });
 
@@ -159,6 +172,10 @@ export class TodoDataService {
     this.todoToUpdate.set(todo);
   }
 
+  setTodoToToggleStatus(todo: Todo) {
+    this.todoToToggleStatus.set(todo);
+  }
+
   async setTodoToDelete(todo: Todo): Promise<void> {
     const confirmed = await this.confirmDialog.confirm(
       `Are you sure you want to delete "${todo.title}"?`
@@ -221,6 +238,27 @@ export class TodoDataService {
           console.log(t);
           this.currentTodos.update((todos) => {
             return (todos = todos.filter((t) => t.id !== todo.id) as Todo[]);
+          });
+        }),
+        catchError((err) =>
+          of({
+            error: this.errorService.formatError(err),
+          } as Result<void>)
+        )
+      );
+  }
+
+  private toggleStatus(todo: Partial<Todo>): Observable<Result<void>> {
+    return this.http
+      .patch<ApiResponse<void>>(this.TODO_URL + '/' + todo.id + '/status', {})
+      .pipe(
+        map(() => ({ data: undefined } as Result<void>)),
+        tap((t) => {
+          console.log(t);
+          this.currentTodos.update((todos) => {
+            return this.currentTodos().map((t) =>
+              t.id === todo.id ? { ...t, completed: !t.completed } : t
+            ) as Todo[];
           });
         }),
         catchError((err) =>

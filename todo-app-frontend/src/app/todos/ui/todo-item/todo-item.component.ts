@@ -9,6 +9,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Todo } from '../../data-access/todo.model';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -19,6 +21,8 @@ import { DatePipe } from '@angular/common';
     MatIconModule,
     MatButtonModule,
     DatePipe,
+    MatCheckboxModule,
+    FormsModule,
   ],
   templateUrl: './todo-item.component.html',
   styleUrl: './todo-item.component.scss',
@@ -28,6 +32,7 @@ export class TodoItemComponent {
   todo = input.required<Todo>();
   editItem = output<Todo>();
   deleteItem = output<Todo>();
+  toggleComplete = output<Todo>();
 
   get isOverdue(): boolean {
     const today = new Date();
@@ -41,5 +46,9 @@ export class TodoItemComponent {
 
   onDelete() {
     this.deleteItem.emit(this.todo());
+  }
+
+  toggleCompleteStatus() {
+    this.toggleComplete.emit(this.todo());
   }
 }

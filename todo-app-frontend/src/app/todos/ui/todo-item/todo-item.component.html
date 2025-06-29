@@ -3,26 +3,28 @@
     <mat-card-title>
       <span class="todo-title">
         @if (todo().completed) {
-          <mat-icon
-            class="task-done-icon"
-            aria-hidden="false"
-            aria-label="Task done icon"
-            fontIcon="check_circle"
-          ></mat-icon>
-        }
-        @if (isOverdue) {
-          <mat-icon
-            class="overdue-icon"
-            aria-hidden="false"
-            aria-label="Overdue icon"
-            fontIcon="warning"
-          ></mat-icon>
+        <mat-icon
+          class="task-done-icon"
+          aria-hidden="false"
+          aria-label="Task done icon"
+          fontIcon="check_circle"
+        ></mat-icon>
+        } @if (isOverdue) {
+        <mat-icon
+          class="overdue-icon"
+          aria-hidden="false"
+          aria-label="Overdue icon"
+          fontIcon="warning"
+        ></mat-icon>
         }
         {{ todo().title }}
       </span>
     </mat-card-title>
     <mat-card-subtitle>
-      <span>Due on: {{ todo().dueDate | date: "longDate" }}</span>
+      <span>Due on: {{ todo().dueDate | date : "longDate" }}</span>
+    </mat-card-subtitle>
+    <mat-card-subtitle>
+      <span>Created on: {{ todo().createdDate | date : "medium" }}</span>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
@@ -30,16 +32,21 @@
       {{ todo().description }}
     </p>
   </mat-card-content>
-  <mat-card-footer>
+  <mat-card-actions align="end">
     @if (!todo().completed) {
-      <button mat-button (click)="onEdit()">
-        <mat-icon>edit</mat-icon>
-        Edit
-      </button>
+    <button mat-button (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
     }
     <button mat-button (click)="onDelete()">
       <mat-icon>delete</mat-icon>
       Delete
     </button>
-  </mat-card-footer>
+    <mat-checkbox
+      [ngModel]="todo().completed"
+      (change)="toggleCompleteStatus()"
+    >
+    </mat-checkbox>
+  </mat-card-actions>
 </mat-card>

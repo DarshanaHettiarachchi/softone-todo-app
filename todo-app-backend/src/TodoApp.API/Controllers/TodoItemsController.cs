@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoApp.Application.Features.Todos.Commands.CreateTodo;
 using TodoApp.Application.Features.Todos.Commands.DeleteToDo;
+using TodoApp.Application.Features.Todos.Commands.ToggleCompleteStatus;
 using TodoApp.Application.Features.Todos.Commands.UpdateTodo;
 using TodoApp.Application.Features.Todos.Queries.GetTodos;
 
@@ -13,17 +14,20 @@ public class ToDoItemsController : ControllerBase
     private readonly GetTodosHandler _getTodosHandler;
     private readonly UpdateTodoCommandHandler _updateTodoCommandHandler;
     private readonly DeleteTodoCommandHandler _deleteTodoCommandHandler;
+    private readonly ToggleCompleteStatusHandler _toggleCompleteStatusCommandHandler;
 
     public ToDoItemsController(
         CreateTodoItemCommandHandler createToDoItemCommandHandler,
         GetTodosHandler getTodosHandler,
         UpdateTodoCommandHandler updateTodoCommandHandler,
-        DeleteTodoCommandHandler deleteTodoCommandHandler)
+        DeleteTodoCommandHandler deleteTodoCommandHandler,
+        ToggleCompleteStatusHandler toggleCompleteStatusCommandHandler)
     {
         _createTodoItemCommandHandler = createToDoItemCommandHandler;
         _getTodosHandler = getTodosHandler;
         _updateTodoCommandHandler = updateTodoCommandHandler;
         _deleteTodoCommandHandler = deleteTodoCommandHandler;
+        _toggleCompleteStatusCommandHandler = toggleCompleteStatusCommandHandler;
     }
 
     [HttpPost()]
@@ -52,6 +56,13 @@ public class ToDoItemsController : ControllerBase
     public async Task<ActionResult> Delete(int id)
     {
         await _deleteTodoCommandHandler.Handle(id);
+        return NoContent();
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id)
+    {
+        await _toggleCompleteStatusCommandHandler.Handle(id);
         return NoContent();
     }
 }
