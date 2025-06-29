@@ -10,6 +10,7 @@ import { ApiResponse } from './todo-api-response.model';
 import { Observable, of } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationDialogService } from '../../shared/confirmation-dialog/confirmation-dialog.service';
+import { AuthService } from '../../shared/auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,7 @@ export class TodoDataService {
   private router = inject(Router);
   private currentRoute = inject(ActivatedRoute);
   private confirmDialog = inject(ConfirmationDialogService);
+  private authService = inject(AuthService);
 
   private todoToSave = signal<Todo | null>(null);
   private todoToSave$ = toObservable(this.todoToSave);
@@ -38,7 +40,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.updateTodo(todo);
-    })
+    }),
   );
 
   private todoUpdateResult = toSignal(this.todoUpdateResult$, {
@@ -49,7 +51,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.deleteTodo(todo);
-    })
+    }),
   );
 
   private todoDeleteResult = toSignal(this.todoDeleteResult$, {
@@ -60,31 +62,22 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.toggleStatus(todo);
-    })
+    }),
   );
 
   private todoToggleStatusResult = toSignal(this.todoToggleStatusResult$, {
     initialValue: null,
   });
 
-  private todosResponse$ = this.http
-    .get<ApiResponse<Todo[]>>(this.TODO_URL)
-    .pipe(
-      map((t) => ({ data: t.data } as Result<Todo[]>)),
-      tap((t) => {
-        this.todosLoading.set(false);
-        this.selectedTodo.set(null); // Reset selected todo on new fetch
-        this.currentTodos.set(t.data || []);
-        console.log(t.data);
-      }),
-      catchError((err) => {
-        this.todosLoading.set(false);
-        return of({
-          data: [],
-          error: this.errorService.formatError(err),
-        } as Result<Todo[]>);
-      })
-    );
+  private todosResponse$ = toObservable(this.authService.user).pipe(
+    tap(() => {
+      this.currentTodos.set([]);
+    }),
+    filter(Boolean),
+    switchMap(() => {
+      return this.fetchTodos();
+    }),
+  );
 
   private todosResult = toSignal(this.todosResponse$, {
     initialValue: { data: [] } as Result<Todo[]>,
@@ -94,7 +87,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.addTodo(todo);
-    })
+    }),
   );
 
   selectedTodo = signal<Todo | null>(null);
@@ -178,7 +171,7 @@ export class TodoDataService {
 
   async setTodoToDelete(todo: Todo): Promise<void> {
     const confirmed = await this.confirmDialog.confirm(
-      `Are you sure you want to delete "${todo.title}"?`
+      `Are you sure you want to delete "${todo.title}"?`,
     );
     if (!confirmed) {
       return;
@@ -186,10 +179,29 @@ export class TodoDataService {
     this.todoToDelete.set(todo);
   }
 
+  private fetchTodos(): Observable<Result<Todo[]>> {
+    return this.http.get<ApiResponse<Todo[]>>(this.TODO_URL).pipe(
+      map((t) => ({ data: t.data }) as Result<Todo[]>),
+      tap((t) => {
+        this.todosLoading.set(false);
+        this.selectedTodo.set(null); // Reset selected todo on new fetch
+        this.currentTodos.set(t.data || []);
+        console.log(t.data);
+      }),
+      catchError((err) => {
+        this.todosLoading.set(false);
+        return of({
+          data: [],
+          error: this.errorService.formatError(err),
+        } as Result<Todo[]>);
+      }),
+    );
+  }
+
   private addTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
     this.todoSaving.set(true);
     return this.http.post<ApiResponse<Todo>>(this.TODO_URL, todo).pipe(
-      map((t) => ({ data: t.data } as Result<Todo>)),
+      map((t) => ({ data: t.data }) as Result<Todo>),
       tap((t) => {
         this.todoSaving.set(false);
         console.log(t);
@@ -202,7 +214,7 @@ export class TodoDataService {
           data: {} as Todo,
           error: this.errorService.formatError(err),
         } as Result<Todo>);
-      })
+      }),
     );
   }
 
@@ -211,7 +223,7 @@ export class TodoDataService {
     return this.http
       .put<ApiResponse<void>>(this.TODO_URL + '/' + todo.id, todo)
       .pipe(
-        map(() => ({ data: undefined } as Result<void>)),
+        map(() => ({ data: undefined }) as Result<void>),
         tap((t) => {
           this.todoSaving.set(false);
           console.log(t);
@@ -225,7 +237,7 @@ export class TodoDataService {
           return of({
             error: this.errorService.formatError(err),
           } as Result<void>);
-        })
+        }),
       );
   }
 
@@ -233,7 +245,7 @@ export class TodoDataService {
     return this.http
       .delete<ApiResponse<void>>(this.TODO_URL + '/' + todo.id)
       .pipe(
-        map(() => ({ data: undefined } as Result<void>)),
+        map(() => ({ data: undefined }) as Result<void>),
         tap((t) => {
           console.log(t);
           this.currentTodos.update((todos) => {
@@ -243,8 +255,8 @@ export class TodoDataService {
         catchError((err) =>
           of({
             error: this.errorService.formatError(err),
-          } as Result<void>)
-        )
+          } as Result<void>),
+        ),
       );
   }
 
@@ -252,20 +264,20 @@ export class TodoDataService {
     return this.http
       .patch<ApiResponse<void>>(this.TODO_URL + '/' + todo.id + '/status', {})
       .pipe(
-        map(() => ({ data: undefined } as Result<void>)),
+        map(() => ({ data: undefined }) as Result<void>),
         tap((t) => {
           console.log(t);
           this.currentTodos.update((todos) => {
             return this.currentTodos().map((t) =>
-              t.id === todo.id ? { ...t, completed: !t.completed } : t
+              t.id === todo.id ? { ...t, completed: !t.completed } : t,
             ) as Todo[];
           });
         }),
         catchError((err) =>
           of({
             error: this.errorService.formatError(err),
-          } as Result<void>)
-        )
+          } as Result<void>),
+        ),
       );
   }
 
