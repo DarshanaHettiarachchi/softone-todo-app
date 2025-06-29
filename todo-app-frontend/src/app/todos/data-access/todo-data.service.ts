@@ -227,6 +227,7 @@ export class TodoDataService {
         tap((t) => {
           this.todoSaving.set(false);
           console.log(t);
+          this.selectedTodo.set(null);
           this.currentTodos.update((todos) => {
             todos = todos.filter((t) => t.id !== todo.id);
             return [...todos, todo] as Todo[];
