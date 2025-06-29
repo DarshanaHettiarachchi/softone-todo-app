@@ -1,18 +1,25 @@
-﻿using TodoApp.Application.Contracts.Persistence;
+﻿using TodoApp.Application.Contracts.Authentication;
+using TodoApp.Application.Contracts.Persistence;
 
 namespace TodoApp.Application.Features.Todos.Queries.GetTodos;
 public class GetTodosHandler
 {
     private readonly ITodoItemRepository _todoItemRepository;
-    public GetTodosHandler(ITodoItemRepository todoItemRepository)
+    private readonly ICurrentUserService _currentUserService;
+    public GetTodosHandler(ITodoItemRepository todoItemRepository, ICurrentUserService currentUserService)
     {
         _todoItemRepository = todoItemRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<GetTodosQureyResponse> Handle()
     {
         var response = new GetTodosQureyResponse();
-        var todos = await _todoItemRepository.ListAllAsync();
+
+        var currentUserId = _currentUserService.UserId
+            ?? throw new UnauthorizedAccessException("User must be authenticated.");
+
+        var todos = await _todoItemRepository.ListByUserIdAsync(currentUserId);
 
         var todoDtoList = todos.Select(static x => new GetTodoDto
         {

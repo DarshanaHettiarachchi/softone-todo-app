@@ -1,4 +1,5 @@
-﻿using TodoApp.Application.Contracts.Persistence;
+﻿using Microsoft.EntityFrameworkCore;
+using TodoApp.Application.Contracts.Persistence;
 using TodoApp.Domain.Entities;
 
 namespace TodoApp.Infrastructure.Persistence.Repositories;
@@ -18,5 +19,12 @@ internal sealed class TodoItemRepository : BaseRepository<TodoItem>, ITodoItemRe
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
         return toDoItem;
+    }
+
+    public async Task<List<TodoItem>> ListByUserIdAsync(int userId)
+    {
+        return await _dbContext.ToDoItems
+            .Where(t => t.UserId == userId)
+            .ToListAsync();
     }
 }

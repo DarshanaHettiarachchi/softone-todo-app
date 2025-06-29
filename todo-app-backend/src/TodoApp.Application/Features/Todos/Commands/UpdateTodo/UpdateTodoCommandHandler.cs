@@ -1,4 +1,5 @@
-﻿using TodoApp.Application.Contracts.Persistence;
+﻿using TodoApp.Application.Contracts.Authorization;
+using TodoApp.Application.Contracts.Persistence;
 using TodoApp.Application.Exceptions;
 using TodoApp.Domain.Entities;
 
@@ -6,10 +7,12 @@ namespace TodoApp.Application.Features.Todos.Commands.UpdateTodo;
 public class UpdateTodoCommandHandler
 {
     private readonly ITodoItemRepository _todoItemRepository;
+    private readonly IResourceAuthorizationService _authZ;
 
-    public UpdateTodoCommandHandler(ITodoItemRepository todoItemRepository)
+    public UpdateTodoCommandHandler(ITodoItemRepository todoItemRepository, IResourceAuthorizationService authZ)
     {
         _todoItemRepository = todoItemRepository;
+        _authZ = authZ;
     }
 
     public async Task Handle(int id, UpdateTodoCommand command)
@@ -21,6 +24,8 @@ public class UpdateTodoCommandHandler
         {
             throw new NotFoundException(nameof(TodoItem), command.Id);
         }
+
+        _authZ.EnsureUserOwnsResource(todoToUpdate.UserId);
 
         todoToUpdate.Title = command.Title;
         todoToUpdate.Description = command.Description;
