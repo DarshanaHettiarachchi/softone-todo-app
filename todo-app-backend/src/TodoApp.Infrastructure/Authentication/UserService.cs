@@ -16,6 +16,21 @@ public class UserService : IUserService
         _dbContext = dbContext;
     }
 
+    public async Task<User?> GetUserAsync(string email, string password)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null)
+        {
+            return null;
+        }
+        var verified = VerifyPassword(password, user.PasswordHash);
+        if (!verified)
+        {
+            return null;
+        }
+        return user;
+    }
+
     public async Task RegisterAsync(RegisterUserDto dto)
     {
         if (await _dbContext.Users.AnyAsync(u => u.Email == dto.Email))
@@ -57,4 +72,6 @@ public class UserService : IUserService
     {
         return HashPassword(password) == storedHash;
     }
+
+
 }

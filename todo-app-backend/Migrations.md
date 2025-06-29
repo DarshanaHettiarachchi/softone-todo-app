@@ -20,3 +20,6 @@ dotnet ef migrations add [MigratinName] `
 dotnet ef database update `
   --project . `
   --startup-project ..\TodoApp.API
+
+"email": "testuser2@todo.com",
+  "password": "password"

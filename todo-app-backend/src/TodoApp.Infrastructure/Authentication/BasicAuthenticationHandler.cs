@@ -54,12 +54,17 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         var username = credentials[0];
         var password = credentials[1];
 
-        if (!await _userService.ValidateCredentialsAsync(username, password))
+        var user = await _userService.GetUserAsync(username, password);
+        if (user == null)
         {
             return AuthenticateResult.Fail("Authentication failed");
         }
 
-        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, username) };
+#pragma warning disable CA1305 // Specify IFormatProvider
+        var claims = new[] {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Email), };
+#pragma warning restore CA1305 // Specify IFormatProvider
         var identity = new ClaimsIdentity(claims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, Scheme.Name);

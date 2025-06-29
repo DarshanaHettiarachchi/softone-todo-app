@@ -7,6 +7,7 @@ using TodoApp.Application.Features.Todos.Commands.UpdateTodo;
 using TodoApp.Application.Features.Todos.Queries.GetTodos;
 
 namespace TodoApp.Api.Controllers;
+[Authorize]
 [Route("api/todos")]
 [ApiController]
 public class ToDoItemsController : ControllerBase
@@ -38,7 +39,6 @@ public class ToDoItemsController : ControllerBase
         return Ok(id);
     }
 
-    [Authorize]
     [HttpGet()]
     public async Task<ActionResult<string[]>> Index()
     {
