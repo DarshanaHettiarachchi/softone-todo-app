@@ -9,6 +9,7 @@ import { DEFAULT_TODO_FILTER, TodoFilter } from './filter.model';
 import { ApiResponse } from './todo-api-response.model';
 import { Observable, of } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmationDialogService } from '../../shared/confirmation-dialog/confirmation-dialog.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,7 @@ export class TodoDataService {
   private errorService = inject(HttpErrorService);
   private router = inject(Router);
   private currentRoute = inject(ActivatedRoute);
+  private confirmDialog = inject(ConfirmationDialogService);
 
   private todoToSave = signal<Todo | null>(null);
   private todoToSave$ = toObservable(this.todoToSave);
@@ -34,7 +36,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.updateTodo(todo);
-    }),
+    })
   );
 
   private todoUpdateResult = toSignal(this.todoUpdateResult$, {
@@ -45,7 +47,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.deleteTodo(todo);
-    }),
+    })
   );
 
   private todoDeleteResult = toSignal(this.todoDeleteResult$, {
@@ -55,7 +57,7 @@ export class TodoDataService {
   private todosResponse$ = this.http
     .get<ApiResponse<Todo[]>>(this.TODO_URL)
     .pipe(
-      map((t) => ({ data: t.data }) as Result<Todo[]>),
+      map((t) => ({ data: t.data } as Result<Todo[]>)),
       tap((t) => {
         this.todosLoading.set(false);
         this.selectedTodo.set(null); // Reset selected todo on new fetch
@@ -68,7 +70,7 @@ export class TodoDataService {
           data: [],
           error: this.errorService.formatError(err),
         } as Result<Todo[]>);
-      }),
+      })
     );
 
   private todosResult = toSignal(this.todosResponse$, {
@@ -79,7 +81,7 @@ export class TodoDataService {
     filter(Boolean),
     switchMap((todo) => {
       return this.addTodo(todo);
-    }),
+    })
   );
 
   selectedTodo = signal<Todo | null>(null);
@@ -157,14 +159,20 @@ export class TodoDataService {
     this.todoToUpdate.set(todo);
   }
 
-  setTodoToDelete(todo: Todo): void {
+  async setTodoToDelete(todo: Todo): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm(
+      `Are you sure you want to delete "${todo.title}"?`
+    );
+    if (!confirmed) {
+      return;
+    }
     this.todoToDelete.set(todo);
   }
 
   private addTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
     this.todoSaving.set(true);
     return this.http.post<ApiResponse<Todo>>(this.TODO_URL, todo).pipe(
-      map((t) => ({ data: t.data }) as Result<Todo>),
+      map((t) => ({ data: t.data } as Result<Todo>)),
       tap((t) => {
         this.todoSaving.set(false);
         console.log(t);
@@ -177,7 +185,7 @@ export class TodoDataService {
           data: {} as Todo,
           error: this.errorService.formatError(err),
         } as Result<Todo>);
-      }),
+      })
     );
   }
 
@@ -185,7 +193,7 @@ export class TodoDataService {
     return this.http
       .put<ApiResponse<void>>(this.TODO_URL + '/' + todo.id, todo)
       .pipe(
-        map(() => ({ data: undefined }) as Result<void>),
+        map(() => ({ data: undefined } as Result<void>)),
         tap((t) => {
           console.log(t);
           this.currentTodos.update((todos) => {
@@ -196,8 +204,8 @@ export class TodoDataService {
         catchError((err) =>
           of({
             error: this.errorService.formatError(err),
-          } as Result<void>),
-        ),
+          } as Result<void>)
+        )
       );
   }
 
@@ -205,7 +213,7 @@ export class TodoDataService {
     return this.http
       .delete<ApiResponse<void>>(this.TODO_URL + '/' + todo.id)
       .pipe(
-        map(() => ({ data: undefined }) as Result<void>),
+        map(() => ({ data: undefined } as Result<void>)),
         tap((t) => {
           console.log(t);
           this.currentTodos.update((todos) => {
@@ -215,8 +223,8 @@ export class TodoDataService {
         catchError((err) =>
           of({
             error: this.errorService.formatError(err),
-          } as Result<void>),
-        ),
+          } as Result<void>)
+        )
       );
   }
 
