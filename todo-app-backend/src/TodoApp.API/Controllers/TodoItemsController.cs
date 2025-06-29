@@ -38,10 +38,10 @@ public class ToDoItemsController : ControllerBase
         return Ok(todosResponse);
     }
 
-    [HttpPut()]
-    public async Task<ActionResult> Update(UpdateTodoCommand updateTodoCommand)
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update(int id, [FromBody] UpdateTodoCommand updateTodoCommand)
     {
-        await _updateTodoCommandHandler.Handle(updateTodoCommand);
+        await _updateTodoCommandHandler.Handle(id, updateTodoCommand);
         return NoContent();
     }
 }

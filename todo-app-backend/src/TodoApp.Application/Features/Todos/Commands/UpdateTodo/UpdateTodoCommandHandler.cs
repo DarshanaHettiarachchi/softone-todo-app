@@ -12,10 +12,10 @@ public class UpdateTodoCommandHandler
         _todoItemRepository = todoItemRepository;
     }
 
-    public async Task Handle(UpdateTodoCommand command)
+    public async Task Handle(int id, UpdateTodoCommand command)
     {
 
-        var todoToUpdate = await _todoItemRepository.GetByIdAsync(command.Id);
+        var todoToUpdate = await _todoItemRepository.GetByIdAsync(id);
 
         if (todoToUpdate == null)
         {
