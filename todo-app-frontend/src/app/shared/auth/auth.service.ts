@@ -37,6 +37,9 @@ export class AuthService {
     });
     const user = await firstValueFrom(login$);
     this.userSignal.set(user);
+    ///This is only for the demo , It si very bad to store this anywhere
+    const encoded = btoa(email + ':' + password);
+    sessionStorage.setItem('authToken', 'Basic ' + encoded);
     return user;
   }
 
