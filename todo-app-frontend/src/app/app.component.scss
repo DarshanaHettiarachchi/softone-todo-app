@@ -9,6 +9,14 @@
   );
 }
 
+.user-detail {
+  display: flex;
+  gap: 4px;
+  @media (max-width: 650px) {
+    display: none;
+  }
+}
+
 .spacer {
   flex: 1 1 auto;
 }

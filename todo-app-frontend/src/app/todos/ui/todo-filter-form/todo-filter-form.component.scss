@@ -6,6 +6,9 @@ form {
   display: flex;
   flex-direction: row;
   gap: 15px;
+  @media (max-width: 650px) {
+    flex-wrap: wrap;
+  }
 }
 
 .form-control {
