@@ -9,6 +9,10 @@
   );
 }
 
+.spacer {
+  flex: 1 1 auto;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto; /* Center horizontally */
