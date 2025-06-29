@@ -48,8 +48,11 @@ export class TodosComponent {
     this.todoDataService.setTodoToUpdate(todo);
   }
 
+  handleDeleteTodo(todo: Todo) {
+    this.todoDataService.setTodoToDelete(todo);
+  }
+
   handleFilterChange(filter: TodoFilter) {
-    console.log('Filter changed:', filter);
     this.todoDataService.setTodoFilter(filter);
   }
 }

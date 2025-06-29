@@ -21,7 +21,8 @@
       @for (todo of todos(); track todo.id) {
         <app-todo-item
           [todo]="todo"
-          (edit)="handleEditTodo($event)"
+          (editItem)="handleEditTodo($event)"
+          (deleteItem)="handleDeleteTodo($event)"
         ></app-todo-item>
       }
     </div>

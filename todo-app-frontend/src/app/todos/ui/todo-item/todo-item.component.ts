@@ -26,7 +26,8 @@ import { DatePipe } from '@angular/common';
 })
 export class TodoItemComponent {
   todo = input.required<Todo>();
-  edit = output<Todo>();
+  editItem = output<Todo>();
+  deleteItem = output<Todo>();
 
   get isOverdue(): boolean {
     const today = new Date();
@@ -35,6 +36,10 @@ export class TodoItemComponent {
   }
 
   onEdit(): void {
-    this.edit.emit(this.todo());
+    this.editItem.emit(this.todo());
+  }
+
+  onDelete() {
+    this.deleteItem.emit(this.todo());
   }
 }

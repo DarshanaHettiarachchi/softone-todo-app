@@ -25,8 +25,10 @@ export class TodoDataService {
   private todoToSave$ = toObservable(this.todoToSave);
   private currentTodos = signal<Todo[]>([]);
   private todoToUpdate = signal<Todo | null>(null);
+  private todoToDelete = signal<Todo | null>(null);
 
   private todoToUpdate$ = toObservable(this.todoToUpdate);
+  private todoToDelete$ = toObservable(this.todoToDelete);
 
   private todoUpdateResult$ = this.todoToUpdate$.pipe(
     filter(Boolean),
@@ -36,6 +38,17 @@ export class TodoDataService {
   );
 
   private todoUpdateResult = toSignal(this.todoUpdateResult$, {
+    initialValue: null,
+  });
+
+  private todoDeleteResult$ = this.todoToDelete$.pipe(
+    filter(Boolean),
+    switchMap((todo) => {
+      return this.deleteTodo(todo);
+    }),
+  );
+
+  private todoDeleteResult = toSignal(this.todoDeleteResult$, {
     initialValue: null,
   });
 
@@ -141,8 +154,11 @@ export class TodoDataService {
   }
 
   setTodoToUpdate(todo: Todo): void {
-    console.log('Setting todo to update:', todo);
     this.todoToUpdate.set(todo);
+  }
+
+  setTodoToDelete(todo: Todo): void {
+    this.todoToDelete.set(todo);
   }
 
   private addTodo(todo: Partial<Todo>): Observable<Result<Todo>> {
@@ -166,21 +182,42 @@ export class TodoDataService {
   }
 
   private updateTodo(todo: Partial<Todo>): Observable<Result<void>> {
-    return this.http.put<ApiResponse<void>>(this.TODO_URL, todo).pipe(
-      map(() => ({ data: undefined }) as Result<void>),
-      tap((t) => {
-        console.log(t);
-        this.currentTodos.update((todos) => {
-          todos = todos.filter((t) => t.id !== todo.id);
-          return [...todos, todo] as Todo[];
-        });
-      }),
-      catchError((err) =>
-        of({
-          error: this.errorService.formatError(err),
-        } as Result<void>),
-      ),
-    );
+    return this.http
+      .put<ApiResponse<void>>(this.TODO_URL + '/' + todo.id, todo)
+      .pipe(
+        map(() => ({ data: undefined }) as Result<void>),
+        tap((t) => {
+          console.log(t);
+          this.currentTodos.update((todos) => {
+            todos = todos.filter((t) => t.id !== todo.id);
+            return [...todos, todo] as Todo[];
+          });
+        }),
+        catchError((err) =>
+          of({
+            error: this.errorService.formatError(err),
+          } as Result<void>),
+        ),
+      );
+  }
+
+  private deleteTodo(todo: Partial<Todo>): Observable<Result<void>> {
+    return this.http
+      .delete<ApiResponse<void>>(this.TODO_URL + '/' + todo.id)
+      .pipe(
+        map(() => ({ data: undefined }) as Result<void>),
+        tap((t) => {
+          console.log(t);
+          this.currentTodos.update((todos) => {
+            return (todos = todos.filter((t) => t.id !== todo.id) as Todo[]);
+          });
+        }),
+        catchError((err) =>
+          of({
+            error: this.errorService.formatError(err),
+          } as Result<void>),
+        ),
+      );
   }
 
   private isFilterEqual(a: TodoFilter, b: TodoFilter): boolean {
